@@ -1,0 +1,13 @@
+name: HydroPortal-dev
+title: HydroPortal-dev
+username:
+account: mbarney
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7104218
+bundleId: 6332318
+url: https://mbarney.shinyapps.io/HydroPortal-dev/
+when: 1663958918.9442
+lastSyncTime: 1663958918.94421
+asMultiple: FALSE
+asStatic: FALSE
