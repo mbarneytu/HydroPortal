@@ -32,8 +32,9 @@ drawMap <- function(){
 }
 
 saveSite <- function(input) {
-  query <- paste0("CALL ins_site(?,?,?,?,?,?,?,?,?)")
+  query <- paste0("CALL ins_site(?,?,?,?,?,?,?,?,?,?)")
   params <- list(input$site_name, 
+                 input$user_site_id, 
                  input$install_date, 
                  input$lat, 
                  input$long, 

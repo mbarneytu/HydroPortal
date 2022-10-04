@@ -7,6 +7,7 @@ ui <- fluidPage(
   fluidRow(
     column(width = 5,
            textInput("site_name", "Site Name"), 
+           textInput("user_site_id", "Site ID"), 
            dateInput("install_date", "Date of installation"),
            textAreaInput("equipment", "Equipment"),
            textInput("contact_name", "TU Staff Contact Name"),
