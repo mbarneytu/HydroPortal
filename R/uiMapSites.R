@@ -2,5 +2,7 @@ library(shiny)
 library(leaflet)
 
 mapSites <- function() {
-  
+  tabPanel(
+    "Map"
+  )
 }
