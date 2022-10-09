@@ -8,7 +8,7 @@ createSite <- function() {
     fluidRow(
       column(
         width = 6,
-        textInput("site_name*", "*Site Name", width = "90%"),
+        textInput("site_name", "*Site Name", width = "90%"),
         # selectInput("basin", "*Basin", ),
         # selectInput("subbasin", "*Subbasin", ),
         textInput("contact_name", "*TU Staff Contact Name", width = "90%"),
