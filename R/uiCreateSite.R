@@ -2,7 +2,8 @@ library(shiny)
 library(leaflet)
 
 createSite <- function() {
-  tabPanel("Create Site",
+  tagList(
+                    
     titlePanel("Create a New Site"),
     h6("Required fields are marked with *"),
     fluidRow(

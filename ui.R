@@ -4,11 +4,18 @@ library(leaflet)
 ui <- fluidPage(
   shinyFeedback::useShinyFeedback(),
   
+  titlePanel("TU Hydro Portal"),
+  
   tabsetPanel(
-
-    createSite(),
+    tabPanel(
+      "Create Site",
+      createSite()
+    ),
     
-    mapSites(),
+    tabPanel(
+      "Map",
+      mapSitesUI("map1")
+    ),
     
     viewSite()
     

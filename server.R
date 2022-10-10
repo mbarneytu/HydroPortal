@@ -53,4 +53,6 @@ server <- function(input, output, session) {
     validateInputs(input)
     saveSite(input)
   })
+  
+  mapSitesServer("map1")
 }
