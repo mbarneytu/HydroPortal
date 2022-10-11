@@ -7,6 +7,7 @@ ui <- fluidPage(
   titlePanel("TU Hydro Portal"),
   
   tabsetPanel(
+    selected = "Map",
     tabPanel(
       "Create Site",
       createSite()

@@ -8,6 +8,18 @@ mapSitesUI <- function(id) {
       column(width = 12,
              leafletOutput(NS(id, "map"))
       )
+    ),
+    fluidRow(
+      column(
+        width = 12,
+        textOutput(NS(id,"lat"))
+        )
+    ),
+    fluidRow(
+      column(
+        width = 12,
+        textOutput(NS(id,"long"))
+        )
     )
   )
 }
@@ -24,6 +36,11 @@ mapSitesServer <- function(id) {
                          options = layersControlOptions(collapsed = FALSE)) %>% 
         
         fitBounds(-125.1, 49, -67.1, 25.2) # zoom to Lower 48 states
+    })
+
+    observeEvent(input$map_click, {
+      output$lat <- renderText(input$map_click$lat)
+      output$long <- renderText(input$map_click$lng)
     })
   })
 }
