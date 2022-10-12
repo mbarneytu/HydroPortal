@@ -5,7 +5,6 @@ library(DBI)
 
 createSiteUI <- function(id) {
   tagList(
-    
     h3("Create a New Site"),
     h6("Required fields are marked with *"),
     fluidRow(
@@ -51,6 +50,7 @@ createSiteUI <- function(id) {
 
 validateInputs <- function(input){
   feedbackWarning("site_name", input$site_name == "", "Value is required")
+  feedbackWarning("install_date", toString(input$install_date) == "", "Value is required")
   # Ensure lat and long are in the lower 48 states
   feedbackWarning("lat", 
                   is.na(input$lat) || !(input$lat > 25 & input$lat < 50), 
@@ -64,6 +64,7 @@ validateInputs <- function(input){
                   "Value is required")
   req(
     input$site_name, 
+    input$install_date,
     (input$lat > 25 & input$lat < 50),
     (input$long > -125.1 & input$long < -67.1),
     input$contact_name,
@@ -87,18 +88,32 @@ drawMap <- function(){
 
 saveSite <- function(input) {
   query <- paste0("CALL ins_site(?,?,?,?,?,?,?,?,?,?)")
-  params <- list(input$site_name, 
-                 input$user_site_id, 
-                 input$install_date, 
-                 input$lat, 
-                 input$long, 
-                 input$contact_name, 
-                 input$contact_email, 
-                 ifelse(input$landowner != "", input$landowner, NA), 
-                 ifelse(input$equipment != "", input$equipment, NA), 
-                 ifelse(input$notes != "", input$notes, NA)
+  params <- list(input$site_name,
+                 input$user_site_id,
+                 input$install_date,
+                 input$lat,
+                 input$long,
+                 input$contact_name,
+                 input$contact_email,
+                 input$landowner,
+                 input$equipment,
+                 input$notes
   )
+  
   dbExecute(pool, query, params)
+}
+
+resetInputs <- function() {
+  updateTextInput(inputId = "site_name", value = "")
+  # updateSelectInput("basin")
+  # updateSelectInput("subbasin")
+  updateTextInput(inputId = "contact_name", value = "")
+  updateTextInput(inputId = "contact_email", value = "")
+  updateDateInput(inputId = "install_date", value = NULL)
+  updateTextInput(inputId = "user_site_id", value = "")
+  updateTextAreaInput(inputId = "equipment", value = "")
+  updateTextInput(inputId = "landowner", value = "")
+  updateTextAreaInput(inputId = "notes", value = "")
 }
 
 createSiteServer <- function(id) {
@@ -108,7 +123,19 @@ createSiteServer <- function(id) {
     
     observeEvent(input$btnSave, {
       validateInputs(input)
-      saveSite(input)
+      
+      tryCatch({
+        saveSite(input)
+        showNotification("Site saved successfully.", type = "message")
+        resetInputs()
+        },
+        
+        error = function(cnd) {
+          showNotification(paste0("Error saving to database: ", cnd$message), 
+                           type = "error")
+        }
+      )
+
     })
   })
 }
