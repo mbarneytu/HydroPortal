@@ -24,25 +24,26 @@ createSiteUI <- function(id) {
       
       column(
         width = 6,
-        fluidRow(
-          column(width = 12,
-                 leafletOutput(NS(id,"map"))
-          )
-        ),
-        br(),
-        fluidRow(
-          column(width = 6,
-                 numericInput(NS(id,"lat"), "*Latitude", value = "")),
-          column(width = 6,
-                 numericInput(NS(id,"long"), "*Longitude", value = "")
-          )
-        ),
-        fluidRow(
-          column(width = 6, offset = 3, 
-                 actionButton(NS(id,"btnSave"), "Save Site", 
-                              width = "100%", class = "btn-success")
-          )
-        )
+        # fluidRow(
+        #   column(width = 12,
+        #          leafletOutput(NS(id,"map"))
+        #   )
+        # ),
+        # br(),
+        # fluidRow(
+        #   column(width = 6,
+        #          numericInput(NS(id,"lat"), "*Latitude", value = "")),
+        #   column(width = 6,
+        #          numericInput(NS(id,"long"), "*Longitude", value = "")
+        #   )
+        # )
+        siteCoordsUI("siteCoords")
+      )
+    ),
+    fluidRow(
+      column(width = 6, offset = 3, 
+             actionButton(NS(id,"btnSave"), "Save Site", 
+                          width = "100%", class = "btn-success")
       )
     )
   )
@@ -51,13 +52,13 @@ createSiteUI <- function(id) {
 validateInputs <- function(input){
   feedbackWarning("site_name", input$site_name == "", "Value is required")
   feedbackWarning("install_date", toString(input$install_date) == "", "Value is required")
-  # Ensure lat and long are in the lower 48 states
-  feedbackWarning("lat", 
-                  is.na(input$lat) || !(input$lat > 25 & input$lat < 50), 
-                  "Enter a valid latitude")
-  feedbackWarning("long", is.na(input$long) || 
-                    !(input$long > -125.1 & input$long < -67.1), 
-                  "Enter a valid longitude")
+  # # Ensure lat and long are in the lower 48 states
+  # feedbackWarning("lat", 
+  #                 is.na(input$lat) || !(input$lat > 25 & input$lat < 50), 
+  #                 "Valid latitudes are 25 to 50 degrees")
+  # feedbackWarning("long", is.na(input$long) || 
+  #                   !(input$long > -125.1 & input$long < -67.1), 
+  #                 "Valid longitudes are -125 to -67 degrees")
   feedbackWarning("contact_name", input$contact_name == "",
                   "Value is required")
   feedbackWarning("contact_email", input$contact_email == "",
@@ -65,34 +66,35 @@ validateInputs <- function(input){
   req(
     input$site_name, 
     input$install_date,
-    (input$lat > 25 & input$lat < 50),
-    (input$long > -125.1 & input$long < -67.1),
+    # (input$lat > 25 & input$lat < 50),
+    # (input$long > -125.1 & input$long < -67.1),
     input$contact_name,
     input$contact_email
   )
 }
 
-drawMap <- function(){
-  renderLeaflet({
-    leaflet() %>% 
-      
-      addProviderTiles(providers$Esri.WorldTopoMap, group = "Topo") %>%
-      addProviderTiles(providers$Esri.WorldImagery, group = "Satellite") %>%
-      
-      addLayersControl(baseGroups = c("Topo", "Satellite"),
-                       options = layersControlOptions(collapsed = FALSE)) %>% 
-      
-      fitBounds(-125.1, 49, -67.1, 25.2) # zoom to Lower 48 states
-  })
-}
+# drawMap <- function(){
+#   renderLeaflet({
+#     leaflet() %>% 
+#       
+#       addProviderTiles(providers$Esri.WorldTopoMap, group = "Topo") %>%
+#       addProviderTiles(providers$Esri.WorldImagery, group = "Satellite") %>%
+#       
+#       addLayersControl(baseGroups = c("Topo", "Satellite"),
+#                        options = layersControlOptions(collapsed = FALSE)) %>% 
+#       
+#       fitBounds(-125.1, 49, -67.1, 25.2) # zoom to Lower 48 states
+#   })
+# }
 
 saveSite <- function(input) {
   query <- paste0("CALL ins_site(?,?,?,?,?,?,?,?,?,?)")
   params <- list(input$site_name,
                  input$user_site_id,
                  input$install_date,
-                 input$lat,
-                 input$long,
+# TODO: HOW TO GET THESE VALUES FROM SITECOORDS MODULE:
+# input$lat,
+# input$long,
                  input$contact_name,
                  input$contact_email,
                  input$landowner,
@@ -114,12 +116,15 @@ resetInputs <- function() {
   updateTextAreaInput(inputId = "equipment", value = "")
   updateTextInput(inputId = "landowner", value = "")
   updateTextAreaInput(inputId = "notes", value = "")
+  # updateNumericInput(inputId = "lat", value = "")
+  # updateNumericInput(inputId = "long", value = "")
 }
 
 createSiteServer <- function(id) {
   moduleServer(id, function(input, output, session) {
     
-    output$map <- drawMap()
+    # output$map <- drawMap()
+    mapSitesServer("siteCoords")
     
     observeEvent(input$btnSave, {
       validateInputs(input)
@@ -137,5 +142,10 @@ createSiteServer <- function(id) {
       )
 
     })
+    
+    # observeEvent(input$long, {
+    #   req(input$lat, input$long)
+    # })
+      
   })
 }
