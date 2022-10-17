@@ -33,6 +33,9 @@ createSiteUI <- function(id) {
              actionButton(NS(id, "btnSave"), "Save Site", 
                           width = "100%", class = "btn-success")
       )
+    ),
+    fluidRow(
+      textOutput(NS(id, "latlong"))
     )
   )
 }
@@ -90,7 +93,9 @@ resetInputs <- function() {
 createSiteServer <- function(id) {
   moduleServer(id, function(input, output, session) {
     
-    siteCoordsServer("siteCoords")
+    coords <- siteCoordsServer("siteCoords")
+    
+    output$latlong <- renderText(paste0(coords()$lat, coords()$long))
     
     observeEvent(input$btnSave, {
       validateInputs(input)

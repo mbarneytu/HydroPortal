@@ -6,45 +6,44 @@ siteCoordsUI <- function(id) {
   tagList(
     useShinyFeedback(),
     fluidRow(
-      column(width = 3,
+      column(width = 4,
              h4("Zoom to coordinates:")
       ),
-      column(width = 3,
+      column(width = 4,
              numericInput(NS(id, "inLat"), label = "Lat", value = "", step = "any")
       ),
-      column(width = 3,
+      column(width = 4,
              numericInput(NS(id, "inLong"), label = "Long", value = "", step = "any")
       )
     ),
     fluidRow(
 
-      column(width = 3,
-             actionButton(NS(id, "zoomBtn"), label = "Zoom", class = "btn-success"))
+      column(width = 12,
+             actionButton(NS(id, "zoomBtn"), label = "Zoom", class = "btn-info"))
     ),
 
     br(),
     fluidRow(
       column(width = 12,
-             leafletOutput(NS(id, "map"))
-      )
+             leafletOutput(NS(id, "map")))
     ),
     
     br(),
     fluidRow(
-      column(width = 2, offset = 1,
+      column(width = 5, 
              actionButton(NS(id, "pinBtn"), label = "Place Pin at Map Center",
                           class = "btn-info")
       ),
-      column(width = 1,
-             h5("Pin Lat:")
+      column(width = 1, 
+             p(tags$b("*Pin Lat:"))
       ),
-      column(width = 1,
+      column(width = 2,
              textOutput(NS(id, "pinLat"))
       ),
       column(width = 1,
-             h5("Pin Long:")
+             p(tags$b("*Pin Long:"))
       ),
-      column(width = 5,
+      column(width = 2,
              textOutput(NS(id, "pinLong"))
       )
     )
@@ -79,6 +78,8 @@ siteCoordsServer <- function(id) {
     maxLat <- 49
     minLong <- -125
     maxLong <- -67
+    centerLat <- 38
+    centerLong <- -96
     
     output$map <- renderLeaflet({
       leaflet() %>% 
@@ -100,15 +101,24 @@ siteCoordsServer <- function(id) {
     })
 
     observeEvent(input$pinBtn, {
+
       centerLat <- round(input$map_center$lat, digits = 5)
       centerLong <- round(input$map_center$lng, digits = 6)
-
+      
       leafletProxy("map") %>%
         addCircleMarkers(lng = centerLong, lat = centerLat, layerId = "myPin")
 
       output$pinLat <- renderText(centerLat)
       output$pinLong <- renderText(centerLong)
     })
+    
+    coords <- reactive(
+      list(
+        lat = centerLat,
+        long = centerLong
+      )
+    )
+    
   })  
 }
 
