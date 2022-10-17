@@ -2,8 +2,7 @@ library(shiny)
 library(leaflet)
 
 ui <- fluidPage(
-  shinyFeedback::useShinyFeedback(),
-  
+
   titlePanel("TU Hydro Portal"),
   
   tabsetPanel(

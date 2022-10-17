@@ -1,5 +1,10 @@
+library(shiny)
+library(shinyFeedback)
+library(leaflet)
+
 siteCoordsUI <- function(id) {
   tagList(
+    useShinyFeedback(),
     fluidRow(
       column(width = 3,
              h4("Zoom to coordinates:")
@@ -12,11 +17,11 @@ siteCoordsUI <- function(id) {
       )
     ),
     fluidRow(
-      
+
       column(width = 3,
              actionButton(NS(id, "zoomBtn"), label = "Zoom", class = "btn-success"))
     ),
-    
+
     br(),
     fluidRow(
       column(width = 12,
@@ -26,17 +31,17 @@ siteCoordsUI <- function(id) {
     
     br(),
     fluidRow(
-      column(width = 2, offset = 1, 
+      column(width = 2, offset = 1,
              actionButton(NS(id, "pinBtn"), label = "Place Pin at Map Center",
                           class = "btn-info")
       ),
-      column(width = 1, 
+      column(width = 1,
              h5("Pin Lat:")
       ),
       column(width = 1,
              textOutput(NS(id, "pinLat"))
       ),
-      column(width = 1, 
+      column(width = 1,
              h5("Pin Long:")
       ),
       column(width = 5,
@@ -88,19 +93,19 @@ siteCoordsServer <- function(id) {
     })
     
     observeEvent(input$zoomBtn, {
-      
+
       validatePoint(input, minLat, maxLat, minLong, maxLong)
-      leafletProxy("map") %>% 
+      leafletProxy("map") %>%
         setView(lng = input$inLong, lat = input$inLat, zoom = 14)
     })
-    
+
     observeEvent(input$pinBtn, {
       centerLat <- round(input$map_center$lat, digits = 5)
       centerLong <- round(input$map_center$lng, digits = 6)
-      
+
       leafletProxy("map") %>%
         addCircleMarkers(lng = centerLong, lat = centerLat, layerId = "myPin")
-      
+
       output$pinLat <- renderText(centerLat)
       output$pinLong <- renderText(centerLong)
     })

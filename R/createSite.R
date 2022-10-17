@@ -5,44 +5,32 @@ library(DBI)
 
 createSiteUI <- function(id) {
   tagList(
+    useShinyFeedback(),
     h3("Create a New Site"),
     h6("Required fields are marked with *"),
     fluidRow(
       column(
         width = 6,
-        textInput(NS(id,"site_name"), "*Site Name", width = "90%"),
-        # selectInput(NS(id,"basin"), "*Basin", ),
-        # selectInput(NS(id,"subbasin"), "*Subbasin", ),
-        textInput(NS(id,"contact_name"), "*TU Staff Contact Name", width = "90%"),
-        textInput(NS(id,"contact_email"), "*TU Staff Contact Email", width = "90%"),
-        dateInput(NS(id,"install_date"), "*Date of installation", width = "90%"),
-        textInput(NS(id,"user_site_id"), "Site ID", width = "90%"), 
-        textAreaInput(NS(id,"equipment"), "Equipment", width = "90%"),
-        textInput(NS(id,"landowner"), "Landowner", width = "90%"),
-        textAreaInput(NS(id,"notes"), "Notes", width = "90%"),
+        textInput(NS(id, "site_name"), "*Site Name", width = "90%"),
+        # selectInput(NS(id, "basin"), "*Basin", ),
+        # selectInput(NS(id, "subbasin"), "*Subbasin", ),
+        textInput(NS(id, "contact_name"), "*TU Staff Contact Name", width = "90%"),
+        textInput(NS(id, "contact_email"), "*TU Staff Contact Email", width = "90%"),
+        dateInput(NS(id, "install_date"), "*Date of installation", width = "90%"),
+        textInput(NS(id, "user_site_id"), "Site ID", width = "90%"), 
+        textAreaInput(NS(id, "equipment"), "Equipment", width = "90%"),
+        textInput(NS(id, "landowner"), "Landowner", width = "90%"),
+        textAreaInput(NS(id, "notes"), "Notes", width = "90%"),
       ),
       
       column(
         width = 6,
-        # fluidRow(
-        #   column(width = 12,
-        #          leafletOutput(NS(id,"map"))
-        #   )
-        # ),
-        # br(),
-        # fluidRow(
-        #   column(width = 6,
-        #          numericInput(NS(id,"lat"), "*Latitude", value = "")),
-        #   column(width = 6,
-        #          numericInput(NS(id,"long"), "*Longitude", value = "")
-        #   )
-        # )
-        siteCoordsUI("siteCoords")
+        siteCoordsUI(NS(id, "siteCoords"))
       )
     ),
     fluidRow(
       column(width = 6, offset = 3, 
-             actionButton(NS(id,"btnSave"), "Save Site", 
+             actionButton(NS(id, "btnSave"), "Save Site", 
                           width = "100%", class = "btn-success")
       )
     )
@@ -52,13 +40,6 @@ createSiteUI <- function(id) {
 validateInputs <- function(input){
   feedbackWarning("site_name", input$site_name == "", "Value is required")
   feedbackWarning("install_date", toString(input$install_date) == "", "Value is required")
-  # # Ensure lat and long are in the lower 48 states
-  # feedbackWarning("lat", 
-  #                 is.na(input$lat) || !(input$lat > 25 & input$lat < 50), 
-  #                 "Valid latitudes are 25 to 50 degrees")
-  # feedbackWarning("long", is.na(input$long) || 
-  #                   !(input$long > -125.1 & input$long < -67.1), 
-  #                 "Valid longitudes are -125 to -67 degrees")
   feedbackWarning("contact_name", input$contact_name == "",
                   "Value is required")
   feedbackWarning("contact_email", input$contact_email == "",
@@ -72,20 +53,6 @@ validateInputs <- function(input){
     input$contact_email
   )
 }
-
-# drawMap <- function(){
-#   renderLeaflet({
-#     leaflet() %>% 
-#       
-#       addProviderTiles(providers$Esri.WorldTopoMap, group = "Topo") %>%
-#       addProviderTiles(providers$Esri.WorldImagery, group = "Satellite") %>%
-#       
-#       addLayersControl(baseGroups = c("Topo", "Satellite"),
-#                        options = layersControlOptions(collapsed = FALSE)) %>% 
-#       
-#       fitBounds(-125.1, 49, -67.1, 25.2) # zoom to Lower 48 states
-#   })
-# }
 
 saveSite <- function(input) {
   query <- paste0("CALL ins_site(?,?,?,?,?,?,?,?,?,?)")
@@ -123,8 +90,7 @@ resetInputs <- function() {
 createSiteServer <- function(id) {
   moduleServer(id, function(input, output, session) {
     
-    # output$map <- drawMap()
-    mapSitesServer("siteCoords")
+    siteCoordsServer("siteCoords")
     
     observeEvent(input$btnSave, {
       validateInputs(input)
@@ -142,10 +108,5 @@ createSiteServer <- function(id) {
       )
 
     })
-    
-    # observeEvent(input$long, {
-    #   req(input$lat, input$long)
-    # })
-      
   })
 }
