@@ -1,5 +1,6 @@
 library(shiny)
 library(leaflet)
+library(DBI)
 
 mapSitesUI <- function(id) {
   tagList(
@@ -8,26 +9,22 @@ mapSitesUI <- function(id) {
       column(width = 12,
              leafletOutput(NS(id, "map"))
       )
-    ),
-    fluidRow(
-      column(
-        width = 12,
-        textOutput(NS(id,"lat"))
-        )
-    ),
-    fluidRow(
-      column(
-        width = 12,
-        textOutput(NS(id,"long"))
-        )
     )
   )
 }
 
+selectSites <- function() {
+  query <- "CALL sel_site_locations"
+  res <- dbGetQuery(pool, query)
+}
+
 mapSitesServer <- function(id) {
   moduleServer(id, function(input, output, session) {
+    
+    df <- selectSites()
+    
     output$map <- renderLeaflet({
-      leaflet() %>% 
+      leaflet(data = df) %>% 
         
         addProviderTiles(providers$Esri.WorldTopoMap, group = "Topo") %>%
         addProviderTiles(providers$Esri.WorldImagery, group = "Satellite") %>%
@@ -35,12 +32,14 @@ mapSitesServer <- function(id) {
         addLayersControl(baseGroups = c("Topo", "Satellite"),
                          options = layersControlOptions(collapsed = FALSE)) %>% 
         
-        fitBounds(-125.1, 49, -67.1, 25.2) # zoom to Lower 48 states
+        fitBounds(-125.1, 49, -67.1, 25.2) %>% # zoom to Lower 48 states 
+        
+        addMarkers(~lon, ~lat, popup = ~as.character(site_name), 
+                   label = ~as.character(site_name))
     })
 
     observeEvent(input$map_click, {
-      output$lat <- renderText(input$map_click$lat)
-      output$long <- renderText(input$map_click$lng)
+      # Handle map clicks
     })
   })
 }

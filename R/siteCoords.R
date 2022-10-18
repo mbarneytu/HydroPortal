@@ -102,11 +102,10 @@ siteCoordsServer <- function(id) {
 
     observeEvent(input$pinBtn, {
 
-      centerLat <- round(input$map_center$lat, digits = 5)
-      centerLong <- round(input$map_center$lng, digits = 6)
-      
       leafletProxy("map") %>%
-        addCircleMarkers(lng = centerLong, lat = centerLat, layerId = "myPin")
+        addCircleMarkers(lng = round(input$map_center$lng, digits = 6), 
+                         lat = round(input$map_center$lat, digits = 5), 
+                         layerId = "myPin")
 
       output$pinLat <- renderText(centerLat)
       output$pinLong <- renderText(centerLong)
