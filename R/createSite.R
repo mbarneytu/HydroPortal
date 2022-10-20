@@ -95,7 +95,7 @@ createSiteServer <- function(id) {
     
     coords <- siteCoordsServer("siteCoords")
     
-    output$latlong <- renderText(paste0(coords()$lat, coords()$long))
+    output$latlong <- renderText(paste0(coords$lat(), coords$long()))
     
     observeEvent(input$btnSave, {
       validateInputs(input)

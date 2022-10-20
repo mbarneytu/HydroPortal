@@ -100,24 +100,25 @@ siteCoordsServer <- function(id) {
         setView(lng = input$inLong, lat = input$inLat, zoom = 14)
     })
 
+    clickLat <- eventReactive(input$pinBtn, 
+                              round(input$map_center$lat, digits = 5))
+    clickLong <- eventReactive(input$pinBtn, 
+                               round(input$map_center$lng, digits = 6))
+    
     observeEvent(input$pinBtn, {
-
       leafletProxy("map") %>%
-        addCircleMarkers(lng = round(input$map_center$lng, digits = 6), 
-                         lat = round(input$map_center$lat, digits = 5), 
+        addCircleMarkers(lng = clickLong(),
+                         lat = clickLat(),
                          layerId = "myPin")
 
-      output$pinLat <- renderText(centerLat)
-      output$pinLong <- renderText(centerLong)
+      output$pinLat <- renderText(clickLat())
+      output$pinLong <- renderText(clickLong())
     })
     
-    coords <- reactive(
-      list(
-        lat = centerLat,
-        long = centerLong
-      )
+    list(
+      lat = reactive(clickLat()),
+      long = reactive(clickLong())
     )
-    
   })  
 }
 
