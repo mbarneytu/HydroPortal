@@ -21,7 +21,8 @@ selectSites <- function() {
 mapSitesServer <- function(id) {
   moduleServer(id, function(input, output, session) {
     
-    df <- selectSites()
+    # Load all sites into a dataframe
+    df <- selectSites() 
     
     output$map <- renderLeaflet({
       leaflet(data = df) %>% 
@@ -34,12 +35,13 @@ mapSitesServer <- function(id) {
         
         fitBounds(-125.1, 49, -67.1, 25.2) %>% # zoom to Lower 48 states 
         
-        addMarkers(~lon, ~lat, popup = ~as.character(site_name), 
-                   label = ~as.character(site_name))
+        addMarkers(lng = ~lon, lat = ~lat, popup = ~as.character(site_name), 
+                   label = ~as.character(site_name), layerId = ~site_id)
     })
 
-    observeEvent(input$map_click, {
-      # Handle map clicks
+    observeEvent(input$map_marker_click, {
+      # Handle marker clicks
+      message(paste0("id=", input$map_marker_click$id))
     })
   })
 }

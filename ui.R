@@ -8,16 +8,13 @@ ui <- fluidPage(
   tabsetPanel(
     
     tabPanel(
-      "Create Site",
-      createSiteUI("createSite")
-    ),
-    
-    tabPanel(
       "Map",
       mapSitesUI("map1")
     ),
     
-    viewSite()
-    
+    tabPanel(
+      "Create Site",
+      createSiteUI("createSite")
+    )
   )
 )
