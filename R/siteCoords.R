@@ -31,7 +31,7 @@ siteCoordsUI <- function(id) {
     br(),
     fluidRow(
       column(width = 5, 
-             actionButton(NS(id, "pinBtn"), label = "Place Pin at Map Center",
+             actionButton(NS(id, "pinBtn"), label = "Place Site at Map Center",
                           class = "btn-info")
       ),
       column(width = 1, 

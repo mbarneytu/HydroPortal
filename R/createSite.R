@@ -22,7 +22,6 @@ createSiteUI <- function(id) {
         textInput(NS(id, "landowner"), "Landowner", width = "90%"),
         textAreaInput(NS(id, "notes"), "Notes", width = "90%"),
       ),
-      
       column(
         width = 6,
         siteCoordsUI(NS(id, "siteCoords"))
@@ -33,22 +32,23 @@ createSiteUI <- function(id) {
              actionButton(NS(id, "btnSave"), "Save Site", 
                           width = "100%", class = "btn-success")
       )
-    ),
-    fluidRow(
-      textOutput(NS(id, "latlong"))
     )
   )
 }
 
-validateInputs <- function(input){
+validateInputs <- function(input, lat, long){
   feedbackWarning("site_name", input$site_name == "", "Value is required")
   feedbackWarning("install_date", toString(input$install_date) == "", "Value is required")
   feedbackWarning("contact_name", input$contact_name == "",
                   "Value is required")
   feedbackWarning("contact_email", input$contact_email == "",
                   "Value is required")
+  feedbackWarning("siteCoords", is.na(lat) || is.null(lat) || lat == "", 
+                  "Click to set site coordinates")
+  # message(glue::glue("lat:{lat}"))
+  
   req(
-    input$site_name, 
+    input$site_name,
     input$install_date,
     # (input$lat > 25 & input$lat < 50),
     # (input$long > -125.1 & input$long < -67.1),
@@ -57,14 +57,13 @@ validateInputs <- function(input){
   )
 }
 
-saveSite <- function(input) {
+saveSite <- function(input, coords) {
   query <- paste0("CALL ins_site(?,?,?,?,?,?,?,?,?,?)")
   params <- list(input$site_name,
                  input$user_site_id,
                  input$install_date,
-# TODO: HOW TO GET THESE VALUES FROM SITECOORDS MODULE:
-# input$lat,
-# input$long,
+                 coords$lat(),
+                 coords$long(),
                  input$contact_name,
                  input$contact_email,
                  input$landowner,
@@ -86,8 +85,6 @@ resetInputs <- function() {
   updateTextAreaInput(inputId = "equipment", value = "")
   updateTextInput(inputId = "landowner", value = "")
   updateTextAreaInput(inputId = "notes", value = "")
-  # updateNumericInput(inputId = "lat", value = "")
-  # updateNumericInput(inputId = "long", value = "")
 }
 
 createSiteServer <- function(id) {
@@ -95,13 +92,15 @@ createSiteServer <- function(id) {
     
     coords <- siteCoordsServer("siteCoords")
     
-    output$latlong <- renderText(paste0(coords$lat(), coords$long()))
+    # str(coords$lat)
+    # message(glue::glue("coords: {coords}"))
     
     observeEvent(input$btnSave, {
-      validateInputs(input)
+      validateInputs(input, coords$lat(), coords$long())
+      # message(glue::glue("lat:{coords$lat()}"))
       
       tryCatch({
-        saveSite(input)
+        saveSite(input, coords)
         showNotification("Site saved successfully.", type = "message")
         resetInputs()
         },
@@ -111,7 +110,6 @@ createSiteServer <- function(id) {
                            type = "error")
         }
       )
-
     })
   })
 }
