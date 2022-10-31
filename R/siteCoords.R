@@ -6,21 +6,36 @@ siteCoordsUI <- function(id) {
   tagList(
     useShinyFeedback(),
     fluidRow(
-      column(width = 4,
-             h4("Zoom to coordinates:")
-      ),
-      column(width = 4,
-             numericInput(NS(id, "inLat"), label = "Lat", value = "", step = "any")
-      ),
-      column(width = 4,
-             numericInput(NS(id, "inLong"), label = "Long", value = "", step = "any")
+      column(width = 12,
+             h6(
+             "Pan and zoom the map so that your site is centered, then 
+             click 'Place Site at Map Center'. Alternatively, you may enter 
+             coordinates below the map, then click 'Zoom to Lat/Long' 
+             to zoom and the map at those coordinates. You can reposition 
+             the site by moving the map and re-clicking 'Place Site at 
+             Map Center'."
+             )
       )
     ),
     fluidRow(
-
-      column(width = 12,
-             actionButton(NS(id, "zoomBtn"), label = "Zoom", class = "btn-info"))
+      column(width = 5, 
+             actionButton(NS(id, "pinBtn"), label = "Place Site at Map Center",
+                          class = "btn-info")
+      ),
+      column(width = 1, 
+             p(tags$b("*Site Lat:"))
+      ),
+      column(width = 2,
+             textOutput(NS(id, "pinLat"))
+      ),
+      column(width = 1,
+             p(tags$b("*Site Long:"))
+      ),
+      column(width = 2,
+             textOutput(NS(id, "pinLong"))
+      )
     ),
+    
 
     br(),
     fluidRow(
@@ -30,22 +45,15 @@ siteCoordsUI <- function(id) {
     
     br(),
     fluidRow(
-      column(width = 5, 
-             actionButton(NS(id, "pinBtn"), label = "Place Site at Map Center",
-                          class = "btn-info")
+      column(width = 4,
+             numericInput(NS(id, "inLat"), label = "Lat", value = "", step = "any")
       ),
-      column(width = 1, 
-             p(tags$b("*Pin Lat:"))
+      column(width = 4,
+             numericInput(NS(id, "inLong"), label = "Long", value = "", step = "any")
       ),
-      column(width = 2,
-             textOutput(NS(id, "pinLat"))
-      ),
-      column(width = 1,
-             p(tags$b("*Pin Long:"))
-      ),
-      column(width = 2,
-             textOutput(NS(id, "pinLong"))
-      )
+      column(width = 4,
+             actionButton(NS(id, "zoomBtn"), label = "Zoom to Lat/Long", 
+                          class = "btn-info"))
     )
   )
 }
