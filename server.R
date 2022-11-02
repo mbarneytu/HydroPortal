@@ -6,5 +6,6 @@ server <- function(input, output, session) {
   
   createSiteServer("createSite")
 
-  mapSitesServer("map1")
+  mapSitesServer("sitesMap")
+  
 }

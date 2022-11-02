@@ -18,8 +18,12 @@ mapSitesUI <- function(id) {
       
       tabPanelBody(
         value = "dataView",
-        textOutput(NS(id, "data")),
-        actionButton(NS(id, "btnReturnToMap"), "Return to Map")
+        fluidRow(
+          actionButton(NS(id, "btnReturnToMap"), "Return to Map"),
+        ),
+        fluidRow(
+          textOutput(NS(id, "data")),
+        )
       )
     )
   )
@@ -40,13 +44,13 @@ mapSitesServer <- function(id) {
     
     # print(sites)
     
+    # Here we use Shiny.setInputValue() to set up a reactive input from the 
+    # server. (see: shiny.rstudio.com/articles/communicating-with-js.html)
     viewDataLink <- actionLink(
       inputId = "foo", # id isn't used in this case.
       label = "View Data",
-      # Here we use Shiny.setInputValue() to set up a reactive input from the 
-      # server. (see: shiny.rstudio.com/articles/communicating-with-js.html)
       # Note that the first argument must be preceded by our module's id.
-      onclick = 'Shiny.setInputValue(\"map1-link\", this.id, {priority: "event"})'
+      onclick = 'Shiny.setInputValue(\"sitesMap-link\", this.id, {priority: "event"})'
     )
     
     output$map <- renderLeaflet({
