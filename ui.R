@@ -8,23 +8,30 @@ ui <- fluidPage(
   tabsetPanel(
 
     tabPanel(
-      "Map",
+      "Map Sites",
       
       tabsetPanel(
         id = "switcher",
         type = "hidden",
         
         tabPanelBody(
-          value = "sitePickerPanel",
+          value = "sitePicker",
           sitePickerInput("sitePicker")
           ),
         
         tabPanelBody(
           value = "siteDataView", 
-          h4(textOutput("siteName")),
-          actionButton("btnReturnMap", "Return to Map")
-          )
-        
+          navlistPanel(
+            header = h4(textOutput("siteName")),
+            footer = actionButton("btnReturnMap", "Return to Map"),
+            widths = c(2, 10),
+            tabPanel("View"),
+            tabPanel("Upload",
+                     uploadDataUI("uploader")
+                     ),
+            tabPanel("Edit Site")
+            ),
+          ),
       ),
     ),
 
