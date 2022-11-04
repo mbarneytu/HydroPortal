@@ -3,14 +3,14 @@ library(leaflet)
 library(DBI)
 library(dplyr)
 
-mapSitesUI <- function(id) {
+sitePickerInput <- function(id) {
   tagList(
     h4("Choose a site from the map:"),
     leafletOutput(NS(id, "map"))
   )
 }
 
-mapSitesServer <- function(id, gageSites) {
+sitePickerServer <- function(id, gageSites) {
   moduleServer(id, function(input, output, session) {
     
     # Here we use Shiny.setInputValue() to set up a reactive input from the 
@@ -19,7 +19,7 @@ mapSitesServer <- function(id, gageSites) {
       inputId = "foo", # id isn't used in this case.
       label = "View Data",
       # Note that the first argument must be preceded by our module's id.
-      onclick = 'Shiny.setInputValue(\"sitesMap-link\", this.id, {priority: "event"})'
+      onclick = 'Shiny.setInputValue(\"sitePicker-link\", this.id, {priority: "event"})'
     )
     
     output$map <- renderLeaflet({

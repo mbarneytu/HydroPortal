@@ -4,12 +4,12 @@ library(DBI)
 
 server <- function(input, output, session) {
   
-  # Load all sites into a tibble
+  # Load all sites from the database
   gageSites <- loadSites()
   
   createSiteServer("createSite")
 
-  selectedSite <- mapSitesServer("sitesMap", gageSites)
+  selectedSite <- sitePickerServer("sitePicker", gageSites)
   
   output$site <- renderText(
     as.character(gageSites %>% 
