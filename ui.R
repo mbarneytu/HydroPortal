@@ -9,7 +9,8 @@ ui <- fluidPage(
     
     tabPanel(
       "Map",
-      mapSitesUI("sitesMap")
+      mapSitesUI("sitesMap"),
+      h6("Selected site: ", textOutput("site"))
     ),
     
     tabPanel(

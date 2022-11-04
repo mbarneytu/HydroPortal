@@ -4,8 +4,17 @@ library(DBI)
 
 server <- function(input, output, session) {
   
+  # Load all sites into a tibble
+  gageSites <- loadSites()
+  
   createSiteServer("createSite")
 
-  mapSitesServer("sitesMap")
+  selectedSite <- mapSitesServer("sitesMap", gageSites)
   
+  output$site <- renderText(
+    as.character(gageSites %>% 
+      filter(site_id == selectedSite()) %>% 
+      select(site_name)
+    ))
+
 }
