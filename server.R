@@ -11,10 +11,18 @@ server <- function(input, output, session) {
 
   selectedSite <- sitePickerServer("sitePicker", gageSites)
   
-  output$site <- renderText(
-    as.character(gageSites %>% 
-      filter(site_id == selectedSite()) %>% 
-      select(site_name)
-    ))
+  observeEvent(selectedSite(), {
+    updateTabsetPanel(inputId = "switcher", selected = "siteDataView")
+    output$siteName <- renderText(
+      as.character(gageSites %>% 
+                     filter(site_id == selectedSite()) %>% 
+                     select(site_name)
+      ))
+    
+  })
+  
+  observeEvent(input$btnReturnMap, {
+    updateTabsetPanel(inputId = "switcher", selected = "sitePickerPanel")
+  })
 
 }

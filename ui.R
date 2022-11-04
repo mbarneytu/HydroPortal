@@ -6,17 +6,32 @@ ui <- fluidPage(
   titlePanel("TU Hydro Portal"),
   
   tabsetPanel(
-    
+
     tabPanel(
       "Map",
-      sitePickerInput("sitePicker"),
-      h6("Selected site: ", textOutput("site"))
+      
+      tabsetPanel(
+        id = "switcher",
+        type = "hidden",
+        
+        tabPanelBody(
+          value = "sitePickerPanel",
+          sitePickerInput("sitePicker")
+          ),
+        
+        tabPanelBody(
+          value = "siteDataView", 
+          h4(textOutput("siteName")),
+          actionButton("btnReturnMap", "Return to Map")
+          )
+        
+      ),
     ),
-    
+
     tabPanel(
       "Create Site",
       createSiteUI("createSite")
     )
-    
+
   )
 )
