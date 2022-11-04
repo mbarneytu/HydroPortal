@@ -25,5 +25,5 @@ server <- function(input, output, session) {
     updateTabsetPanel(inputId = "switcher", selected = "sitePicker")
   })
   
-  uploadDataServer("uploader")
+  uploaderServer("uploader")
 }

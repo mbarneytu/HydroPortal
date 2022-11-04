@@ -2,7 +2,7 @@ library(shiny)
 library(readr)
 library(shinyFeedback)
 
-uploadDataUI <- function(id) {
+uploaderUI <- function(id) {
   tagList(
     shinyFeedback::useShinyFeedback(),
     
@@ -18,7 +18,7 @@ uploadDataUI <- function(id) {
   )
 }
 
-uploadDataServer <- function(id) {
+uploaderServer <- function(id) {
   moduleServer(id, function(input, output, session) {
     csv_contents <- reactive({
       req(input$file)

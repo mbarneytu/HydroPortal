@@ -27,7 +27,7 @@ ui <- fluidPage(
             widths = c(2, 10),
             tabPanel("View"),
             tabPanel("Upload",
-                     uploadDataUI("uploader")
+                     uploaderUI("uploader")
                      ),
             tabPanel("Edit Site")
             ),
