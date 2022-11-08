@@ -1,7 +1,6 @@
 library(shiny)
 library(shinyFeedback)
 library(leaflet)
-library(DBI)
 
 createSiteUI <- function(id) {
   tagList(

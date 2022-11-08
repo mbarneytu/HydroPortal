@@ -1,6 +1,5 @@
 library(leaflet)
 library(shinyFeedback)
-library(DBI)
 
 server <- function(input, output, session) {
   
@@ -18,7 +17,6 @@ server <- function(input, output, session) {
                      filter(site_id == selectedSite()) %>% 
                      select(site_name)
       ))
-    
   })
   
   observeEvent(input$btnReturnMap, {

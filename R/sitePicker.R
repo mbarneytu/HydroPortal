@@ -1,6 +1,5 @@
 library(shiny)
 library(leaflet)
-library(DBI)
 library(dplyr)
 
 sitePickerInput <- function(id) {
@@ -13,11 +12,11 @@ sitePickerInput <- function(id) {
 sitePickerServer <- function(id, gageSites) {
   moduleServer(id, function(input, output, session) {
     
-    # Here we use Shiny.setInputValue() to set up a reactive input from the 
-    # server. (see: shiny.rstudio.com/articles/communicating-with-js.html)
     viewDataLink <- actionLink(
       inputId = "foo", # id isn't used in this case.
       label = "View Data",
+      # Here we use Shiny.setInputValue() to set up a reactive input from the 
+      # server. (see: shiny.rstudio.com/articles/communicating-with-js.html)
       # Note that the first argument must be preceded by our module's id.
       onclick = 'Shiny.setInputValue(\"sitePicker-link\", this.id, {priority: "event"})'
     )

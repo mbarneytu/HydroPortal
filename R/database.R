@@ -6,11 +6,13 @@ library(config)
 config <- config::get("dataconnection")
 
 pool <- dbPool(
-  RMariaDB::MariaDB(),
-  dbname = config$database,
-  host = config$server,
-  user = config$uid,
-  password = config$pwd
+  odbc::odbc(), 
+  Driver = config$driver,
+  Server = config$server,
+  Database = config$database,
+  UID = config$uid,
+  PWD = config$pwd, 
+  timeout = 10
 )
 
 onStop(function() {
@@ -23,4 +25,8 @@ loadSites <- function() {
   
   query <- "SELECT lat, lon, site_name, site_id FROM site"
   res <- as_tibble(dbGetQuery(pool, query))
+}
+
+saveObservations <- function() {
+
 }

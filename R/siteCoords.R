@@ -10,8 +10,8 @@ siteCoordsUI <- function(id) {
              h6(
              "Pan and zoom the map so that your site is centered, then 
              click 'Place Site at Map Center'. Alternatively, you may enter 
-             coordinates below the map, then click 'Zoom to Lat/Long' 
-             to zoom and the map at those coordinates. You can reposition 
+             coordinates below the map, click 'Zoom to Lat/Long', then click 
+             'Place Site at Map Center'. You may reposition 
              the site by moving the map and re-clicking 'Place Site at 
              Map Center'."
              )
