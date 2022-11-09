@@ -11,7 +11,7 @@ uploaderUI <- function(id) {
     fileInput(NS(id, "file"), NULL, placeholder = "Select a CSV file", accept = ".csv"),
     
     numericInput(NS(id, "skip_rows"), "Header rows to skip (0 or more):", 
-                 value = 12, min = 0, max = 100),
+                 value = 0, min = 0, max = 100),
     
     h4("Data preview:"),
     tableOutput(NS(id, "preview")),
@@ -22,7 +22,7 @@ uploaderUI <- function(id) {
 
 uploaderServer <- function(id) {
   moduleServer(id, function(input, output, session) {
-    csv_contents <- reactive({
+    csvPreview <- reactive({
       req(input$file)
       
       is_csv <- "csv" == tolower(tools::file_ext(input$file$name))
@@ -32,18 +32,29 @@ uploaderServer <- function(id) {
       read_csv(input$file$datapath, 
                col_types = cols(.default = col_character()),
                col_names = c("date", "time", "stage (ft)", "temp (C)", "discharge (cfs)"), 
-               n_max = 100,
+               n_max = 10,
                skip = input$skip_rows, na = c("#NUM!"))
     })
     
     output$preview <- renderTable({
-      head(csv_contents(), 10)
+      head(csvPreview(), 10)
       
     }, rownames = TRUE, bordered = TRUE)
     
     observeEvent(input$btnSave, {
       req(input$file)
-      saveObservations()
+      csv <- read_csv(input$file$datapath,
+                      col_names = c("date", "time", "stage", "temperature", "discharge"),
+                      col_types = list(
+                        date = col_date(format = "%m/%d/%Y"), 
+                        time = col_time(), 
+                        stage = col_double(),
+                        temperature = col_double(), 
+                        discharge = col_double()),
+                      skip = input$skip_rows
+      )
+      
+      saveObservations(csv)
     })
   })
 }

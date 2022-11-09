@@ -27,6 +27,23 @@ loadSites <- function() {
   res <- as_tibble(dbGetQuery(pool, query))
 }
 
-saveObservations <- function() {
-
+saveObservations <- function(tibl) {
+  quotedTibl <- tibl %>% 
+    transmute(date = paste0('"', date, '"'),
+              time = paste0('"', time, '"'), 
+              stage, temperature, discharge)
+  
+  
+  tryCatch({
+    query <- sqlAppendTable(pool, "csv_import", quotedTibl)
+    dbExecute(pool, query)
+    showNotification("Data uploaded successfully.", type = "message")
+    },
+    
+    error = function(cnd) {
+      showNotification(paste0("Error saving to database: ", cnd$message), 
+                     type = "error")
+      }
+    )
+  
 }
