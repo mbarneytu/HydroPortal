@@ -90,13 +90,13 @@ siteCoordsServer <- function(id) {
     centerLong <- -96
     
     output$map <- renderLeaflet({
-      leaflet() %>% 
+      leaflet() |>  
         
-        addProviderTiles(providers$Esri.WorldTopoMap, group = "Topo") %>%
-        addProviderTiles(providers$Esri.WorldImagery, group = "Satellite") %>%
+        addProviderTiles(providers$Esri.WorldTopoMap, group = "Topo") |> 
+        addProviderTiles(providers$Esri.WorldImagery, group = "Satellite") |> 
         
         addLayersControl(baseGroups = c("Topo", "Satellite"),
-                         options = layersControlOptions(collapsed = FALSE)) %>% 
+                         options = layersControlOptions(collapsed = FALSE)) |> 
         
         fitBounds(minLong, maxLat, maxLong, minLat) 
     })
@@ -104,7 +104,7 @@ siteCoordsServer <- function(id) {
     observeEvent(input$zoomBtn, {
 
       validatePoint(input, minLat, maxLat, minLong, maxLong)
-      leafletProxy("map") %>%
+      leafletProxy("map") |> 
         setView(lng = input$inLong, lat = input$inLat, zoom = 14)
     })
 
@@ -114,7 +114,7 @@ siteCoordsServer <- function(id) {
                                round(input$map_center$lng, digits = 6))
     
     observeEvent(input$pinBtn, {
-      leafletProxy("map") %>%
+      leafletProxy("map") |> 
         addCircleMarkers(lng = clickLong(),
                          lat = clickLat(),
                          layerId = "myPin")

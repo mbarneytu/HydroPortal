@@ -28,7 +28,7 @@ loadSites <- function() {
 }
 
 saveObservations <- function(tibl) {
-  quotedTibl <- tibl %>% 
+  quotedTibl <- tibl |> 
     transmute(date = paste0('"', date, '"'),
               time = paste0('"', time, '"'), 
               stage, temperature, discharge)

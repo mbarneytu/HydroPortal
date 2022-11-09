@@ -22,15 +22,15 @@ sitePickerServer <- function(id, gageSites) {
     )
     
     output$map <- renderLeaflet({
-      leaflet(data = gageSites) %>%
-        addProviderTiles(providers$Esri.WorldTopoMap, group = "Topo") %>%
-        addProviderTiles(providers$Esri.WorldImagery, group = "Satellite") %>%
+      leaflet(data = gageSites) |> 
+        addProviderTiles(providers$Esri.WorldTopoMap, group = "Topo") |> 
+        addProviderTiles(providers$Esri.WorldImagery, group = "Satellite") |> 
         
         addLayersControl(baseGroups = c("Topo", "Satellite"),
-                         options = layersControlOptions(collapsed = FALSE)) %>% 
+                         options = layersControlOptions(collapsed = FALSE)) |> 
         
         # zoom to Lower 48 states 
-        fitBounds(-125.1, 49, -67.1, 25.2) %>% 
+        fitBounds(-125.1, 49, -67.1, 25.2) |> 
         
         addMarkers(
           lng = gageSites$lon, lat = gageSites$lat,
