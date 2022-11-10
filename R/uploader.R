@@ -20,7 +20,7 @@ uploaderUI <- function(id) {
   )
 }
 
-uploaderServer <- function(id) {
+uploaderServer <- function(id, selectedSiteId) {
   moduleServer(id, function(input, output, session) {
     csvPreview <- reactive({
       req(input$file)
@@ -54,7 +54,7 @@ uploaderServer <- function(id) {
                       skip = input$skip_rows
       )
       
-      saveObservations(csv)
+      saveObservations(csv, selectedSiteId)
     })
   })
 }
