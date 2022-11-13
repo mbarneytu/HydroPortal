@@ -50,5 +50,4 @@ saveObservations <- function(tibl, siteId) {
                      type = "error")
       }
     )
-  
 }

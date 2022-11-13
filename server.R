@@ -21,6 +21,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$btnReturnMap, {
     updateTabsetPanel(inputId = "switcher", selected = "sitePicker")
+    selectedSite = NULL
   })
   
   uploaderServer("uploader", selectedSite())

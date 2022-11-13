@@ -8,7 +8,7 @@ ui <- fluidPage(
   tabsetPanel(
 
     tabPanel(
-      "Map Sites",
+      "Map of sites",
       
       tabsetPanel(
         id = "switcher",
@@ -22,8 +22,11 @@ ui <- fluidPage(
         tabPanelBody(
           value = "siteDataView", 
           navlistPanel(
-            header = h4(textOutput("siteName")),
-            footer = actionButton("btnReturnMap", "Return to Map"),
+            header = list(
+              actionButton("btnReturnMap", "Return to Map of sites"),
+              br(),
+              h3(textOutput("siteName"), br())
+            ),
             widths = c(2, 10),
             tabPanel("View"),
             tabPanel("Upload",
