@@ -1,6 +1,7 @@
 library(pool)
 library(shiny)
 library(config)
+library(dplyr)
 
 # get values from config.yml using the config package
 config <- config::get("dataconnection")
