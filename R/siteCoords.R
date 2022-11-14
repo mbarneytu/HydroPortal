@@ -4,7 +4,6 @@ library(leaflet)
 
 siteCoordsUI <- function(id) {
   tagList(
-    useShinyFeedback(),
     fluidRow(
       column(width = 12,
              h6(

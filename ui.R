@@ -1,8 +1,11 @@
 library(shiny)
 library(leaflet)
+library(shinyjs)
 
 ui <- fluidPage(
-
+  useShinyFeedback(),
+  useShinyjs(),
+  
   titlePanel("TU Hydro Portal"),
   
   tabsetPanel(

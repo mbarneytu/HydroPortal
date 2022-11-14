@@ -4,7 +4,6 @@ library(leaflet)
 
 createSiteUI <- function(id) {
   tagList(
-    useShinyFeedback(),
     h3("Create a New Site"),
     h6("Required fields are marked with *"),
     fluidRow(
@@ -73,7 +72,7 @@ saveSite <- function(input, coords) {
   dbExecute(pool, query, params)
 }
 
-resetInputs <- function() {
+resetUI <- function() {
   updateTextInput(inputId = "site_name", value = "")
   # updateSelectInput("basin")
   # updateSelectInput("subbasin")
@@ -101,7 +100,7 @@ createSiteServer <- function(id) {
       tryCatch({
         saveSite(input, coords)
         showNotification("Site saved successfully.", type = "message")
-        resetInputs()
+        resetUI()
         },
         
         error = function(cnd) {
