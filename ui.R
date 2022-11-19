@@ -31,7 +31,9 @@ ui <- fluidPage(
               h3(textOutput("siteName"), br())
             ),
             widths = c(2, 10),
-            tabPanel("View"),
+            tabPanel("View",
+                     dataViewerUI("dataViewer")
+                     ),
             tabPanel("Upload",
                      uploaderUI("uploader")
                      ),

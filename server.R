@@ -25,4 +25,6 @@ server <- function(input, output, session) {
   })
   
   uploaderServer("uploader", selectedSite())
+  
+  dataViewerServer("dataViewer", selectedSite())
 }

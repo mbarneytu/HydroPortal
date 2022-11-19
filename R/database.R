@@ -51,3 +51,13 @@ saveObservations <- function(tibl, siteId) {
       }
     )
 }
+
+loadObservations <- function(siteId, nrows = 100) {
+  observations <- tbl(pool, "observation")
+  latest <- as_tibble(
+    observations |> 
+      filter(site_id == siteId) |> 
+      slice_max(order_by = meas_datetime, n = nrows) |>
+      select(meas_datetime, stage_ft, discharge_cfs, temperature_C)
+  )
+}
