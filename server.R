@@ -17,14 +17,16 @@ server <- function(input, output, session) {
                      filter(site_id == selectedSite()) |> 
                      select(site_name)
       ))
+    
+    dataViewerServer("dataViewer", selectedSite())
+    
+    uploaderServer("uploader", selectedSite())
+    
   })
   
   observeEvent(input$btnReturnMap, {
     updateTabsetPanel(inputId = "switcher", selected = "sitePicker")
     selectedSite = NULL
   })
-  
-  uploaderServer("uploader", selectedSite())
-  
-  dataViewerServer("dataViewer", selectedSite())
+
 }
