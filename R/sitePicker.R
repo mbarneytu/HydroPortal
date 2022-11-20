@@ -44,6 +44,7 @@ sitePickerServer <- function(id, gageSites) {
         )
     })
 
+    # Return the value gageSites$site_id for the clicked marker
     mySite <- eventReactive(input$link, input$map_marker_click$id)
     
   })
