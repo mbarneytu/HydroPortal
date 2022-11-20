@@ -34,7 +34,7 @@ createSiteUI <- function(id) {
   )
 }
 
-validateInputs <- function(input, lat, long){
+validateSite <- function(input, lat, long){
   feedbackWarning("site_name", input$site_name == "", "Value is required")
   feedbackWarning("install_date", toString(input$install_date) == "", "Value is required")
   feedbackWarning("contact_name", input$contact_name == "",
@@ -72,7 +72,7 @@ saveSite <- function(input, coords) {
   dbExecute(pool, query, params)
 }
 
-resetUI <- function() {
+resetCreateUI <- function() {
   updateTextInput(inputId = "site_name", value = "")
   # updateSelectInput("basin")
   # updateSelectInput("subbasin")
@@ -94,13 +94,13 @@ createSiteServer <- function(id) {
     # message(glue::glue("coords: {coords}"))
     
     observeEvent(input$btnSave, {
-      validateInputs(input, coords$lat(), coords$long())
+      validateSite(input, coords$lat(), coords$long())
       # message(glue::glue("lat:{coords$lat()}"))
       
       tryCatch({
         saveSite(input, coords)
+        resetCreateUI()
         showNotification("Site saved successfully.", type = "message")
-        resetUI()
         },
         
         error = function(cnd) {

@@ -19,11 +19,10 @@ server <- function(input, output, session) {
       ))
     
     dataViewerServer("dataViewer", selectedSite())
-    
-    uploaderServer("uploader", selectedSite())
-    
   })
   
+  uploaderServer("uploader", selectedSite())
+
   observeEvent(input$btnReturnMap, {
     updateTabsetPanel(inputId = "switcher", selected = "sitePicker")
     selectedSite = NULL

@@ -35,7 +35,7 @@ uploaderUI <- function(id) {
   )
 }
 
-resetUI <- function(output) {
+resetUploaderUI <- function(output) {
   shinyjs::reset("thisUI")
   output$preview <- renderTable(NULL)
   output$numRecords <- renderText("")
@@ -47,9 +47,9 @@ uploaderServer <- function(id, selectedSiteId) {
   moduleServer(id, function(input, output, session) {
     
     # If selected site has changed, clear inputs & outputs
-    # observeEvent(selectedSiteId, {
-    #   resetUI(output)
-    # })
+    observeEvent(selectedSiteId, {
+      resetUploaderUI(output)
+    })
     
     csvFile <- reactive({
       req(input$file)
@@ -96,7 +96,7 @@ uploaderServer <- function(id, selectedSiteId) {
     observeEvent(input$btnSave, {
       req(csvFile)
 
-      saveObservations(csvFile, selectedSiteId)
+      saveObservations(csvFile(), selectedSiteId)
     })
   })
 }
