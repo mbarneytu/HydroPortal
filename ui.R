@@ -11,10 +11,10 @@ ui <- fluidPage(
   tabsetPanel(
 
     tabPanel(
-      "Map of sites",
+      "Select site",
       
       tabsetPanel(
-        id = "switcher",
+        id = "tabPickOrView",
         type = "hidden",
         
         tabPanelBody(
@@ -24,22 +24,22 @@ ui <- fluidPage(
         
         tabPanelBody(
           value = "siteDataView", 
-          navlistPanel(
+          tabsetPanel(
+            id = "tabSiteFunction",
+            type = "pills",
             header = list(
-              actionButton("btnReturnMap", "Return to Map of sites"),
-              br(),
               h3(textOutput("siteName"), br())
             ),
-            widths = c(2, 10),
             tabPanel("View",
                      dataViewerUI("dataViewer")
                      ),
             tabPanel("Upload",
                      uploaderUI("uploader")
                      ),
-            tabPanel("Edit Site")
-            ),
+            tabPanel("Edit Site"),
+            tabPanel("Select a new site", value = "selectSite")
           ),
+        ),
       ),
     ),
 

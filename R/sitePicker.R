@@ -12,12 +12,13 @@ sitePickerInput <- function(id) {
 sitePickerServer <- function(id, gageSites) {
   moduleServer(id, function(input, output, session) {
     
+    # Here we use Shiny.setInputValue() to set up a reactive input from the 
+    # server. (see: shiny.rstudio.com/articles/communicating-with-js.html)
     viewDataLink <- actionLink(
       inputId = "foo", # id isn't used in this case.
       label = "View Data",
-      # Here we use Shiny.setInputValue() to set up a reactive input from the 
-      # server. (see: shiny.rstudio.com/articles/communicating-with-js.html)
-      # Note that the first argument must be preceded by our module's id.
+      
+      # Note that the name of the input must be preceded by our module's id.
       onclick = 'Shiny.setInputValue(\"sitePicker-link\", this.id, {priority: "event"})'
     )
     
@@ -44,8 +45,7 @@ sitePickerServer <- function(id, gageSites) {
         )
     })
 
-    # Return the value gageSites$site_id for the clicked marker
+    # Return the site_id for the clicked marker
     mySite <- eventReactive(input$link, input$map_marker_click$id)
-    
   })
 }

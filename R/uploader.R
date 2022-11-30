@@ -4,6 +4,8 @@ library(shinyFeedback)
 
 uploaderUI <- function(id) {
   tagList(
+    textOutput(NS(id,"siteId")),
+    
     div(id = NS(id, "thisUI"),
       h4("Upload gage data"),
       
@@ -11,7 +13,7 @@ uploaderUI <- function(id) {
         fluidRow(
           column(width = 6,
                  fileInput(NS(id, "file"), label = "CSV file", 
-                           placeholder = "Select a CSV file", accept = ".csv"),
+                           accept = ".csv"),
           ),
           column(width = 6,
                  numericInput(NS(id, "skip_rows"), "Skip header rows? (0 or more):", 
@@ -19,6 +21,7 @@ uploaderUI <- function(id) {
           ),
           
         ),
+        shinyjs::hidden(
           div(id = NS(id, "previewDiv"),
               h4("Data preview:"),
               tableOutput(NS(id, "preview")),
@@ -30,14 +33,16 @@ uploaderUI <- function(id) {
               actionButton(NS(id, "btnSave"), "Save to Database", 
                            width = "100%", class = "btn-success")
           )
-      )      
-    )
+          
+        )
+        )
+      )
   )
 }
 
 resetUploaderUI <- function(output) {
   shinyjs::reset("thisUI")
-  output$preview <- renderTable(NULL)
+  # output$preview <- renderTable(NULL) #<< This prevents preview from ever showing.
   output$numRecords <- renderText("")
   output$earliestDate <- renderText("")
   output$latestDate <- renderText("")
@@ -46,9 +51,11 @@ resetUploaderUI <- function(output) {
 uploaderServer <- function(id, selectedSiteId) {
   moduleServer(id, function(input, output, session) {
     
+    output$siteId <- renderText(paste0("Uploading data for site ", selectedSiteId))
+
     # If selected site has changed, clear inputs & outputs
     observeEvent(selectedSiteId, {
-      resetUploaderUI(output)
+      resetUploaderUI(output) 
     })
     
     csvFile <- reactive({
@@ -71,10 +78,9 @@ uploaderServer <- function(id, selectedSiteId) {
       )
     })
     
-    # observeEvent(csvFile(), {
-    #   shinyjs::show("previewDiv")
-    #   },
-    #   ignoreInit = TRUE)
+    observeEvent(csvFile(), {
+      shinyjs::toggle("previewDiv")
+    })
     
     output$preview <- renderTable({
       req(csvFile)
