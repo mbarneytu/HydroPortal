@@ -11,15 +11,8 @@ uploaderUI <- function(id) {
       
       fluidPage(
         fluidRow(
-          column(width = 6,
-                 fileInput(NS(id, "file"), label = "CSV file", 
-                           accept = ".csv"),
-          ),
-          column(width = 6,
-                 numericInput(NS(id, "skip_rows"), "Skip header rows? (0 or more):", 
-                              value = 0, min = 0, max = 100),
-          ),
-          
+          fileInput(NS(id, "file"), label = "CSV file", accept = ".csv"),
+
         ),
         shinyjs::hidden(
           div(id = NS(id, "previewDiv"),
@@ -33,7 +26,6 @@ uploaderUI <- function(id) {
               actionButton(NS(id, "btnSave"), "Save to Database", 
                            width = "100%", class = "btn-success")
           )
-          
         )
       )
     )
@@ -68,8 +60,7 @@ uploaderServer <- function(id, selectedSiteId) {
                  time = col_time(), 
                  stage = col_double(),
                  temperature = col_double(), 
-                 discharge = col_double()),
-               skip = input$skip_rows
+                 discharge = col_double())
       )
     })
     
