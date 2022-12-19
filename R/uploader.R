@@ -51,7 +51,7 @@ resetUploaderUI <- function(output) {
 uploaderServer <- function(id, selectedSiteId) {
   moduleServer(id, function(input, output, session) {
     
-    output$siteId <- renderText(paste0("Uploading data for site ", selectedSiteId))
+    output$siteId <- renderText(paste0("Uploading data for site ", selectedSiteId()))
 
     # If selected site has changed, clear inputs & outputs
     observeEvent(selectedSiteId, {
@@ -102,7 +102,7 @@ uploaderServer <- function(id, selectedSiteId) {
     observeEvent(input$btnSave, {
       req(csvFile)
 
-      saveObservations(csvFile(), selectedSiteId)
+      saveObservations(csvFile(), selectedSiteId())
     })
   })
 }

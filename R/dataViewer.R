@@ -9,7 +9,7 @@ dataViewerUI <- function(id) {
 
 dataViewerServer <- function(id, selectedSiteId) {
   moduleServer(id, function(input, output, session) {
-    output$siteId <- renderText(paste0("Viewing data for site ", selectedSiteId))
-    output$dt <- renderDataTable(loadObservations(selectedSiteId))
+    output$siteId <- renderText(paste0("Viewing data for site ", selectedSiteId()))
+    output$dt <- renderDataTable(loadObservations(selectedSiteId()))
   })
 }
