@@ -13,7 +13,7 @@ server <- function(input, output, session) {
   observeEvent(selectedSite(), {
     updateTabsetPanel(inputId = "tabPickOrView", selected = "siteDataView")
     output$siteName <- renderText(
-      as.character(gageSites |> 
+      as.character(gageSites() |> 
                      filter(site_id == selectedSite()) |> 
                      select(site_name)
       ))
