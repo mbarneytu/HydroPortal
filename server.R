@@ -22,7 +22,9 @@ server <- function(input, output, session) {
                  )
   })
   
-  dataViewerServer("dataViewer", selectedSite)
+  observeEvent(selectedSite(), {
+    dataViewerServer("dataViewer", selectedSite)
+  })
   
   uploaderServer("uploader", selectedSite)
 

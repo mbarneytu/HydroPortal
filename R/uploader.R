@@ -4,8 +4,6 @@ library(shinyFeedback)
 
 uploaderUI <- function(id) {
   tagList(
-    textOutput(NS(id,"siteId")),
-    
     div(id = NS(id, "thisUI"),
       h4("Upload gage data"),
       
@@ -42,8 +40,6 @@ resetUploaderUI <- function(output) {
 
 uploaderServer <- function(id, selectedSiteId) {
   moduleServer(id, function(input, output, session) {
-    
-    output$siteId <- renderText(paste0("Uploading data for site ", selectedSiteId()))
 
     csvFile <- reactive({
       req(input$file)

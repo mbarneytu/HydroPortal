@@ -69,12 +69,22 @@ saveObservations <- function(tibl, siteId) {
     )
 }
 
-loadObservations <- function(siteId, nrows = 100) {
-  observations <- tbl(pool, "observation")
-  latest <- as_tibble(
+getSiteDateRange <- function(siteId) {
+  boundsQuery <- paste0("SELECT MIN(meas_datetime) AS min_dt, 
+    MAX(meas_datetime) AS max_dt FROM `observation` WHERE site_id = ", siteId)
+  
+  bounds <- dbGetQuery(pool, boundsQuery)
+}
+
+loadObservations <- function(siteId, start, end) {
+  obsQuery <- paste0("SELECT site_id, meas_datetime as datetime, 
+    discharge_cfs as cfs, temperature_C 
+    FROM observation WHERE site_id = ", siteId)
+  observations <- as_tibble(dbGetQuery(pool, obsQuery))
+  
+  obs <- as_tibble(
     observations |> 
-      filter(site_id == siteId) |> 
-      slice_max(order_by = meas_datetime, n = nrows) |>
-      select(meas_datetime, stage_ft, discharge_cfs, temperature_C)
+      filter(datetime >= start & datetime <= end) |>
+      select(datetime, cfs, temperature_C)
   )
 }
