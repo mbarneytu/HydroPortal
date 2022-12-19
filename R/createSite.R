@@ -55,23 +55,6 @@ validateSite <- function(input, lat, long){
   )
 }
 
-saveSite <- function(input, coords) {
-  query <- paste0("CALL ins_site(?,?,?,?,?,?,?,?,?,?)")
-  params <- list(input$site_name,
-                 input$user_site_id,
-                 input$install_date,
-                 coords$lat(),
-                 coords$long(),
-                 input$contact_name,
-                 input$contact_email,
-                 input$landowner,
-                 input$equipment,
-                 input$notes
-  )
-  
-  dbExecute(pool, query, params)
-}
-
 resetCreateUI <- function() {
   updateTextInput(inputId = "site_name", value = "")
   # updateSelectInput("basin")
