@@ -14,7 +14,7 @@ ui <- fluidPage(
       "Select site",
       
       tabsetPanel(
-        id = "tabPickOrView",
+        id = "outerTabs",
         type = "hidden",
         
         tabPanelBody(
@@ -25,7 +25,7 @@ ui <- fluidPage(
         tabPanelBody(
           value = "siteDataView", 
           tabsetPanel(
-            id = "tabSiteFunction",
+            id = "innerTabs",
             type = "pills",
             header = list(
               h3(textOutput("siteName"), br())

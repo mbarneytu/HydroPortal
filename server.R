@@ -12,7 +12,7 @@ server <- function(input, output, session) {
   selectedSite <- sitePickerServer("sitePicker", gageSites)
   
   observeEvent(selectedSite(), {
-    updateTabsetPanel(inputId = "tabPickOrView", selected = "siteDataView")
+    updateTabsetPanel(inputId = "outerTabs", selected = "siteDataView")
   })
 
   output$siteName <- renderText({
@@ -26,10 +26,10 @@ server <- function(input, output, session) {
   
   uploaderServer("uploader", selectedSite)
 
-  observeEvent(input$tabSiteFunction, {
-    if (input$tabSiteFunction == "selectSite") {
-      updateTabsetPanel(inputId = "tabSiteFunction", selected = "View")
-      updateTabsetPanel(inputId = "tabPickOrView", selected = "sitePicker")
+  observeEvent(input$innerTabs, {
+    if (input$innerTabs == "selectSite") {
+      updateTabsetPanel(inputId = "innerTabs", selected = "View")
+      updateTabsetPanel(inputId = "outerTabs", selected = "sitePicker")
     }
   })
 }

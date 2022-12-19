@@ -26,8 +26,8 @@ uploaderUI <- function(id) {
               h4("Data preview:"),
               tableOutput(NS(id, "preview")),
               
-              h5(strong("Records loaded:"), textOutput(NS(id, "numRecords"), inline = TRUE),
-                 strong(" Dates:"), textOutput(NS(id, "earliestDate"), inline = TRUE),
+              h5(strong("# Records loaded:"), textOutput(NS(id, "numRecords"), inline = TRUE),
+                 strong(" Date range:"), textOutput(NS(id, "earliestDate"), inline = TRUE),
                  strong(" to"), textOutput(NS(id, "latestDate"), inline = TRUE)
               ),
               actionButton(NS(id, "btnSave"), "Save to Database", 
