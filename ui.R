@@ -44,7 +44,7 @@ ui <- fluidPage(
     ),
 
     tabPanel(
-      "Create Site",
+      "Create new site",
       createSiteUI("createSite")
     )
 
