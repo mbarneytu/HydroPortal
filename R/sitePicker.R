@@ -35,15 +35,15 @@ sitePickerServer <- function(id, gageSites) {
         
     })
     
-    if (nrow(gageSites) > 0) {
-      leafletProxy("map", data = gageSites) |> 
+    if (nrow(gageSites()) > 0) {
+      leafletProxy("map", data = gageSites()) |> 
         addMarkers(
-          lng = gageSites$lon, lat = gageSites$lat,
-          label = gageSites$site_name,
-          layerId = gageSites$site_id
+          lng = gageSites()$lon, lat = gageSites()$lat,
+          label = gageSites()$site_name,
+          layerId = gageSites()$site_id
           ,
           popup = paste(
-            "<b>", gageSites$site_name, "</b></br>",
+            "<b>", gageSites()$site_name, "</b></br>",
             viewDataLink
           )
         )
