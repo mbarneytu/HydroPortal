@@ -35,14 +35,14 @@ uploaderUI <- function(id) {
           )
           
         )
-        )
       )
+    )
   )
 }
 
 resetUploaderUI <- function(output) {
   shinyjs::reset("thisUI")
-  # output$preview <- renderTable(NULL) #<< This prevents preview from ever showing.
+  output$preview <- renderTable(NULL)
   output$numRecords <- renderText("")
   output$earliestDate <- renderText("")
   output$latestDate <- renderText("")
@@ -53,11 +53,6 @@ uploaderServer <- function(id, selectedSiteId) {
     
     output$siteId <- renderText(paste0("Uploading data for site ", selectedSiteId()))
 
-    # If selected site has changed, clear inputs & outputs
-    observeEvent(selectedSiteId, {
-      resetUploaderUI(output) 
-    })
-    
     csvFile <- reactive({
       req(input$file)
       
@@ -80,29 +75,32 @@ uploaderServer <- function(id, selectedSiteId) {
     
     observeEvent(csvFile(), {
       shinyjs::toggle("previewDiv")
-    })
-    
-    output$preview <- renderTable({
-      req(csvFile)
-      head(csvFile()) |> 
-        mutate(date = as.character(date), time = as.character(time))
+      output$preview <- renderTable({
+        req(csvFile)
+        head(csvFile()) |> 
+          mutate(date = as.character(date), time = as.character(time))
       },
       rownames = TRUE, bordered = TRUE)
+      
+      csvStats <- reactive(csvFile() |>
+                             summarize(minDT = min(date),
+                                       maxDT = max(date),
+                                       count = n())
+      )
+      
+      output$numRecords <- renderText(csvStats()$count)
+      output$earliestDate <- renderText(as.character(csvStats()$minDT))
+      output$latestDate <- renderText(as.character(csvStats()$maxDT))
+    })
 
-    csvStats <- reactive(csvFile() |>
-      summarize(minDT = min(date),
-                maxDT = max(date),
-                count = n())
-    )
-
-    output$numRecords <- renderText(csvStats()$count)
-    output$earliestDate <- renderText(as.character(csvStats()$minDT))
-    output$latestDate <- renderText(as.character(csvStats()$maxDT))
-    
     observeEvent(input$btnSave, {
       req(csvFile)
 
       saveObservations(csvFile(), selectedSiteId())
+      
+      resetUploaderUI(output)
+      shinyjs::toggle("previewDiv")
+      
     })
   })
 }

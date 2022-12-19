@@ -24,14 +24,12 @@ server <- function(input, output, session) {
   
   dataViewerServer("dataViewer", selectedSite)
   
-  # uploaderServer("uploader", selectedSite)
+  uploaderServer("uploader", selectedSite)
 
   observeEvent(input$tabSiteFunction, {
     if (input$tabSiteFunction == "selectSite") {
-      resetUploaderUI(output)
       updateTabsetPanel(inputId = "tabSiteFunction", selected = "View")
       updateTabsetPanel(inputId = "tabPickOrView", selected = "sitePicker")
     }
-    # selectedSite = NULL
   })
 }
