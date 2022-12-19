@@ -4,9 +4,9 @@ library(shinyFeedback)
 server <- function(input, output, session) {
   
   # Load all sites from the database
-  gageSites <- loadSites()
+  gageSites <- reactiveVal(loadSites())
   
-  createSiteServer("createSite")
+  createSiteServer("createSite", gageSites)
 
   selectedSite <- sitePickerServer("sitePicker", gageSites)
   

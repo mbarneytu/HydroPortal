@@ -85,7 +85,7 @@ resetCreateUI <- function() {
   updateTextAreaInput(inputId = "notes", value = "")
 }
 
-createSiteServer <- function(id) {
+createSiteServer <- function(id, gageSites) {
   moduleServer(id, function(input, output, session) {
     
     coords <- siteCoordsServer("siteCoords")
@@ -99,6 +99,7 @@ createSiteServer <- function(id) {
       
       tryCatch({
         saveSite(input, coords)
+        gageSites(loadSites())
         resetCreateUI()
         showNotification("Site saved successfully.", type = "message")
         },

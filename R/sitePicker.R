@@ -31,23 +31,18 @@ sitePickerServer <- function(id, gageSites) {
                          options = layersControlOptions(collapsed = FALSE)) |> 
         
         # zoom to Lower 48 states 
-        fitBounds(-125.1, 49, -67.1, 25.2)
+        fitBounds(-125.1, 49, -67.1, 25.2) |> 
         
-    })
-    
-    if (nrow(gageSites) > 0) {
-      leafletProxy("map", data = gageSites) |> 
         addMarkers(
-          lng = gageSites$lon, lat = gageSites$lat,
-          label = gageSites$site_name,
-          layerId = gageSites$site_id
-          ,
+          lng = gageSites()$lon, lat = gageSites()$lat,
+          label = gageSites()$site_name,
+          layerId = gageSites()$site_id,
           popup = paste(
-            "<b>", gageSites$site_name, "</b></br>",
+            "<b>", gageSites()$site_name, "</b></br>",
             viewDataLink
           )
         )
-    }
+    })
 
     # Return the site_id for the clicked marker
     mySite <- eventReactive(input$link, input$map_marker_click$id)
