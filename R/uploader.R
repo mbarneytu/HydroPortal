@@ -80,11 +80,14 @@ uploaderServer <- function(id, selectedSiteId) {
       output$latestDate <- renderText(as.character(csvStats()$maxDT))
     })
 
+    fileName <- eventReactive(input$file, input$file$name)
+    filePath <- eventReactive(input$file, input$file$name)
+    
     observeEvent(input$btnSave, {
       req(csvFile)
 
-      saveObservations(csvFile(), selectedSiteId())
-      
+      saveObservations(csvFile(), selectedSiteId(), fileName(), filePath())
+
       resetUploaderUI(output)
       shinyjs::toggle("previewDiv")
       

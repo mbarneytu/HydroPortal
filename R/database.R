@@ -2,6 +2,7 @@ library(pool)
 library(shiny)
 library(config)
 library(dplyr)
+library(stringr)
 
 # get values from config.yml using the config package
 config <- config::get("dataconnection")
@@ -45,7 +46,8 @@ saveSite <- function(input, coords) {
   dbExecute(pool, query, params)
 }
 
-saveObservations <- function(tibl, siteId) {
+saveObservations <- function(tibl, siteId, fileName, filePath) {
+  # Make the observations' columns match database table structure
   quotedTibl <- tibl |> 
     transmute(
       site_id = siteId,
@@ -55,18 +57,46 @@ saveObservations <- function(tibl, siteId) {
       discharge_cfs = discharge
     )
 
-  tryCatch({
-    query <- sqlAppendTable(pool, "observation", quotedTibl)
-    dbExecute(pool, query)
-    showNotification("Data uploaded successfully.", type = "message")
-    },
+  # First, save a record of this event to the file_upload table so that it
+  # the set of uploaded observations can be manipulated as a unit, e.g,
+  # if the user decides to delete the upload.
+  metadataCols <- quotedTibl |> 
+    summarize(minDT = min(meas_datetime),
+              maxDT = max(meas_datetime),
+              count = n())
+  ins_file_qry <- paste0("INSERT INTO file_upload(site_id, csv_filename, 
+                         csv_filepath, obs_min_datetime, obs_max_datetime, 
+                         row_count) VALUES (?,?,?,?,?,?)")
+  ins_file_params <- list(
+    siteId, fileName, filePath, 
+    # This style SQL query needs different quotation of datetimes 
+    # than sqlAppendTable, which we use later
+    str_remove_all(metadataCols$minDT,"'"), 
+    str_remove_all(metadataCols$maxDT,"'"), 
+    metadataCols$count)
+  
+  tryCatch(
+    poolWithTransaction(pool, function(conn) {
     
+      # insert the file_upload and retrieve its id, which was 
+      # assigned by the database
+      dbExecute(pool, ins_file_qry, ins_file_params)
+      fileUploadId <- dbGetQuery(pool, "SELECT LAST_INSERT_ID()")
+      
+      # Add the id of the file upload to all observations
+      quotedTibl <- quotedTibl |> mutate(file_upload_id = fileUploadId[1,1])
+      
+      # Save the observations to the db, using sqlAppendTable for performance.
+      query <- sqlAppendTable(pool, "observation", quotedTibl)
+      dbExecute(pool, query)
+      
+      showNotification("Data uploaded successfully.", type = "message")
+    }),
     error = function(cnd) {
       showNotification(paste0("Error saving to database: ", 
                               substr(cnd$message, 1, 200)), 
-                     type = "error")
-      }
-    )
+                       type = "error")
+    })
 }
 
 getSiteDateRange <- function(siteId) {

@@ -34,7 +34,7 @@ dataViewerUI <- function(id) {
 }
 
 validateDates <- function(start, end) {
-  isValidRange <- start < end
+  isValidRange <- start <= end
   shinyFeedback::feedbackWarning("dateRange",
                                  !isValidRange,
                                  "Start date must be before end date"
