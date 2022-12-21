@@ -46,11 +46,19 @@ dataViewerServer <- function(id, selectedSiteId) {
   moduleServer(id, function(input, output, session) {
     maxDateRange <- reactive(getSiteDateRange(selectedSiteId()))
 
-    # Set date range to the most recent 90 days' data
+    # Limit date range to the most recent 90 days' data
     observeEvent(maxDateRange, {
+      maxMinus90 <- maxDateRange()$max_dt - ddays(90)
+      
+      start_dt <- maxDateRange()$min_dt
+      
+      if ( (!is.na(maxMinus90)) & (maxMinus90 > maxDateRange()$min_dt) ) {
+          start_dt <- maxMinus90
+      }
+      
       updateDateRangeInput(
         inputId = "dateRange",
-        start = maxDateRange()$max_dt - ddays(90),
+        start = start_dt,
         end = maxDateRange()$max_dt,
         min = maxDateRange()$min_dt,
         max = maxDateRange()$max_dt

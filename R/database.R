@@ -107,6 +107,13 @@ getSiteDateRange <- function(siteId) {
 }
 
 loadObservations <- function(siteId, start, end) {
+  
+  # Set hours and minutes so that start and end include full days' data
+  hour(start) <- 0 
+  minute(start) <- 0
+  hour(end) <- 23
+  minute(end) <- 59
+
   obsQuery <- paste0("SELECT site_id, meas_datetime as datetime, 
     discharge_cfs as cfs, temperature_C 
     FROM observation WHERE site_id = ", siteId)
