@@ -35,7 +35,10 @@ ui <- fluidPage(
                      ),
             tabPanel("Upload",
                      uploaderUI("uploader")
-                     ),
+            ),
+            tabPanel("Delete Data",
+                     deleteDataUI("deleteData")
+            ),
             tabPanel("Edit Site"),
             tabPanel("Select a new site", value = "selectSite")
           ),

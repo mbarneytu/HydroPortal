@@ -22,9 +22,6 @@ onStop(function() {
 })
 
 loadSites <- function() {
-  # Using raw SQL to work around a weird SP error that happens only on shinyapps.io
-  # query <- "CALL sel_site_locations" # returns lat, lon, site_name, site_id
-  
   query <- "SELECT lat, lon, site_name, site_id FROM site"
   res <- as_tibble(dbGetQuery(pool, query))
 }
@@ -124,4 +121,20 @@ loadObservations <- function(siteId, start, end) {
       filter(datetime >= start & datetime <= end) |>
       select(datetime, cfs, temperature_C)
   )
+}
+
+loadUploads <- function(siteId) {
+  query <- paste0("SELECT file_upload_id, upload_datetime, row_count, 
+                  obs_min_datetime, obs_max_datetime, csv_filename, csv_filepath 
+                  FROM file_upload
+                  WHERE deleted_datetime IS NULL AND site_id = ", 
+                  siteId, " ORDER BY upload_datetime DESC")
+  upload <- as_tibble(dbGetQuery(pool, query))
+}
+
+deleteUpload <- function(file_upload_id) {
+  query <- paste0("CALL del_observations(?)")
+  params <- list(file_upload_id)
+  
+  dbExecute(pool, query, params)
 }
