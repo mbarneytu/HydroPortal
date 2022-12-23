@@ -125,3 +125,19 @@ loadObservations <- function(siteId, start, end) {
       select(datetime, cfs, temperature_C)
   )
 }
+
+loadUploads <- function(siteId) {
+  query <- paste0("SELECT file_upload_id, upload_datetime, row_count, 
+                  obs_min_datetime, obs_max_datetime, csv_filename, csv_filepath 
+                  FROM file_upload
+                  WHERE deleted_datetime IS NULL AND site_id = ", 
+                  siteId, " ORDER BY upload_datetime DESC")
+  upload <- as_tibble(dbGetQuery(pool, query))
+}
+
+deleteUpload <- function(file_upload_id) {
+  query <- paste0("CALL del_observations(?)")
+  params <- list(file_upload_id)
+  
+  dbExecute(pool, query, params)
+}
