@@ -81,7 +81,7 @@ uploaderServer <- function(id, selectedSiteId) {
     })
 
     fileName <- eventReactive(input$file, input$file$name)
-    filePath <- eventReactive(input$file, input$file$filePath)
+    filePath <- eventReactive(input$file, input$file$datapath)
     
     observeEvent(input$btnSave, {
       req(csvFile)
