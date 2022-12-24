@@ -14,9 +14,33 @@ server <- function(input, output, session) {
                 target = "selectSiteTab",
                 position = "after"
       )
+      insertTab(inputId = "innerTabs",
+                tab = tabPanel("Upload", 
+                               value = "uploadTab",
+                               uploaderUI("uploader")),
+                target = "viewDataTab",
+                position = "after"
+      )
+      insertTab(inputId = "innerTabs",
+                tab = tabPanel("Delete Data", 
+                               value = "deleteTab",
+                               deleteDataUI("deleteData")),
+                target = "uploadTab",
+                position = "after"
+      )
+      insertTab(inputId = "innerTabs",
+                tab = tabPanel("Edit Site", 
+                               value = "editSiteTab",
+                               editSiteUI("editSite")),
+                target = "deleteTab",
+                position = "after"
+      )
     }
     else {
       removeTab(inputId = "mainTabs", target = "createSiteTab")
+      removeTab(inputId = "innerTabs", target = "uploadTab")
+      removeTab(inputId = "innerTabs", target = "deleteTab")
+      removeTab(inputId = "innerTabs", target = "editSiteTab")
     }
   })
   
@@ -49,7 +73,7 @@ server <- function(input, output, session) {
 
   observeEvent(input$innerTabs, {
     if (input$innerTabs == "selectSite") {
-      updateTabsetPanel(inputId = "innerTabs", selected = "View")
+      updateTabsetPanel(inputId = "innerTabs", selected = "viewDataTab")
       updateTabsetPanel(inputId = "outerTabs", selected = "sitePicker")
     }
   })

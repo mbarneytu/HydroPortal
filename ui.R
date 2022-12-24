@@ -32,16 +32,10 @@ ui <- fluidPage(
             header = list(
               h3(textOutput("siteName"), br())
             ),
-            tabPanel("View",
+            tabPanel(title = "View",
+                     value = "viewDataTab",
                      dataViewerUI("dataViewer")
                      ),
-            tabPanel("Upload",
-                     uploaderUI("uploader")
-            ),
-            tabPanel("Delete Data",
-                     deleteDataUI("deleteData")
-            ),
-            tabPanel("Edit Site"),
             tabPanel("Select a new site", value = "selectSite")
           ),
         ),

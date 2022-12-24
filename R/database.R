@@ -21,6 +21,21 @@ onStop(function() {
   poolClose(pool)
 })
 
+loadUsers <- function() {
+  dbReadTable(pool, "security") |> as_tibble()
+}
+saveSessionId <- function(user, sessionid) {
+  tibble(user = user, sessionid = sessionid, login_time = as.character(now())) %>%
+  dbWriteTable(pool, "sessionids", ., append = TRUE)
+}
+
+loadSessionIds <- function(expiry = 7) {
+  dbReadTable(pool, "sessionids") %>%
+    mutate(login_time = ymd_hms(login_time)) %>%
+    as_tibble() %>%
+    filter(login_time > now() - days(expiry))
+}
+
 loadSites <- function() {
   query <- "SELECT lat, lon, site_name, site_id FROM site"
   res <- as_tibble(dbGetQuery(pool, query))
