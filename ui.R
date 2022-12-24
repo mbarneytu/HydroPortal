@@ -9,9 +9,11 @@ ui <- fluidPage(
   titlePanel("TU Hydro Portal"),
   
   tabsetPanel(
+    id = "mainTabs",
 
     tabPanel(
-      "Select site",
+      title = "Select site",
+      value = "selectSiteTab",
       
       tabsetPanel(
         id = "outerTabs",
@@ -45,11 +47,9 @@ ui <- fluidPage(
         ),
       ),
     ),
-
     tabPanel(
-      "Create new site",
-      createSiteUI("createSite")
+      "Log in",
+      userLoginUI("login")
     )
-
   )
 )
