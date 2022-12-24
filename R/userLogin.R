@@ -4,6 +4,43 @@ library(sodium)
 
 userTbl <- loadUsers()
 
+enableEdits <- function() {
+  insertTab(inputId = "mainTabs", 
+            tab = tabPanel("Create new site", 
+                           value = "createSiteTab",
+                           createSiteUI("createSite")),
+            target = "selectSiteTab",
+            position = "after"
+  )
+  insertTab(inputId = "innerTabs",
+            tab = tabPanel("Upload", 
+                           value = "uploadTab",
+                           uploaderUI("uploader")),
+            target = "viewDataTab",
+            position = "after"
+  )
+  insertTab(inputId = "innerTabs",
+            tab = tabPanel("Delete Data", 
+                           value = "deleteTab",
+                           deleteDataUI("deleteData")),
+            target = "uploadTab",
+            position = "after"
+  )
+  insertTab(inputId = "innerTabs",
+            tab = tabPanel("Edit Site", 
+                           value = "editSiteTab",
+                           editSiteUI("editSite")),
+            target = "deleteTab",
+            position = "after"
+  )
+}
+
+disableEdits <- function() {
+  removeTab(inputId = "mainTabs", target = "createSiteTab")
+  removeTab(inputId = "innerTabs", target = "uploadTab")
+  removeTab(inputId = "innerTabs", target = "deleteTab")
+  removeTab(inputId = "innerTabs", target = "editSiteTab")
+}
 userLoginUI <- function(id) {
   ns <- NS(id)
   tagList(
