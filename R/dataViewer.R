@@ -80,8 +80,8 @@ dataViewerServer <- function(id, selectedSiteId) {
         validateDates(input$dateRange[1], input$dateRange[2])
 
         p <- ggplot(observations()) +
-          geom_line(aes(datetime, cfs), color = "blue", size = 0.5) +
-          geom_line(aes(datetime, temperature_C), color = "red", size = 0.5) +
+          geom_line(aes(datetime, cfs), color = "blue", linewidth = 0.2) +
+          geom_line(aes(datetime, temperature_C), color = "red", linewidth = 0.2) +
           scale_y_continuous(labels = label_number()) +
           scale_x_datetime(name = "")
 
