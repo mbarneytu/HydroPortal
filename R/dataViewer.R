@@ -49,42 +49,43 @@ dataViewerServer <- function(id, selectedSiteId) {
     # Limit date range to the most recent 90 days' data
     observeEvent(maxDateRange, {
       maxMinus90 <- maxDateRange()$max_dt - ddays(90)
-      
+
       start_dt <- maxDateRange()$min_dt
-      
-      if ( (!is.na(maxMinus90)) & (maxMinus90 > maxDateRange()$min_dt) ) {
-          start_dt <- maxMinus90
-      }
-      
-      updateDateRangeInput(
-        inputId = "dateRange",
-        start = start_dt,
-        end = maxDateRange()$max_dt,
-        min = maxDateRange()$min_dt,
-        max = maxDateRange()$max_dt
-      )
+
+    if ( (!is.na(maxMinus90)) & (maxMinus90 > maxDateRange()$min_dt) ) {
+        start_dt <- maxMinus90
+    }
+
+    updateDateRangeInput(
+      inputId = "dateRange",
+      start = start_dt,
+      end = maxDateRange()$max_dt,
+      min = maxDateRange()$min_dt,
+      max = maxDateRange()$max_dt
+    )
     })
-    
+
     observeEvent(input$dateRange, {
       observations <- reactive(
         loadObservations(selectedSiteId(),
                          input$dateRange[1], input$dateRange[2])
       )
-      
+
       output$table <- renderDT({
         validateDates(input$dateRange[1], input$dateRange[2])
         observations()
-      })
-      
+      }, rownames = FALSE)
+
       output$plot <- renderPlotly({
         validateDates(input$dateRange[1], input$dateRange[2])
-        
-        p <- ggplot(observations(), aes(datetime, cfs)) +
-          geom_line(color = "blue") +
+
+        p <- ggplot(observations()) +
+          geom_line(aes(datetime, cfs), color = "blue", size = 0.5) +
+          geom_line(aes(datetime, temperature_C), color = "red", size = 0.5) +
           scale_y_continuous(labels = label_number()) +
           scale_x_datetime(name = "")
-        
-        ggplotly(p) 
+
+        ggplotly(p)
       })
     }, ignoreInit = TRUE)
   })
