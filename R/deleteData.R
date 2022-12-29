@@ -50,11 +50,8 @@ deleteDataServer <- function(id, selectedSiteId) {
     })
     
     observeEvent(input$btnConfirmDel, {
-      print(paste0("Deleting id# ", selectedRow()$file_upload_id))
       deleteUpload(selectedRow()$file_upload_id)
-      print(paste0("Before re-loading, myTable has rows: ", nrow(myTable())))
       myTable <<- reactive(loadUploads(selectedSiteId()))
-      print(paste0("After re-loading, myTable has rows: ", nrow(myTable())))
       removeModal()
     })
 
