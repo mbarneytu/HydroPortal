@@ -92,21 +92,21 @@ saveObservations <- function(tibl, siteId, fileName, filePath) {
     
       # insert the file_upload and retrieve its id, which was 
       # assigned by the database
-      dbExecute(pool, ins_file_qry, ins_file_params)
-      fileUploadId <- dbGetQuery(pool, "SELECT LAST_INSERT_ID()")
+      dbExecute(conn, ins_file_qry, ins_file_params)
+      fileUploadId <- dbGetQuery(conn, "SELECT LAST_INSERT_ID()")
       
       # Add the id of the file upload to all observations
       quotedTibl <- quotedTibl |> mutate(file_upload_id = fileUploadId[1,1])
       
       # Save the observations to the db, using sqlAppendTable for performance.
-      query <- sqlAppendTable(pool, "observation", quotedTibl)
-      dbExecute(pool, query)
+      query <- sqlAppendTable(conn, "observation", quotedTibl)
+      dbExecute(conn, query)
       
       showNotification("Data uploaded successfully.", type = "message")
     }),
     error = function(cnd) {
-      showNotification(paste0("Error saving to database: ", 
-                              substr(cnd$message, 1, 200)), 
+      showNotification(paste0("Error saving to database: ",
+                              substr(cnd$message, 1, 200)),
                        type = "error")
     })
 }
