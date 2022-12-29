@@ -24,15 +24,20 @@ deleteDataServer <- function(id, selectedSiteId) {
                 selection = "single")
     })
 
+    selectedRow <- reactive(tibble())
+    
     observeEvent(input$table_rows_selected,{
+      selectedRow <<- reactive(myTable()[input$table_rows_selected,])
       print(paste0("row # selected: ", input$table_rows_selected,
-                   ". Upload_id: ", myTable()[input$table_rows_selected,]$file_upload_id))
+                   ". Upload_id: ", selectedRow()$file_upload_id))
     })
     
-    selectedRow <- reactive(tibble())
-    # 
-    # observeEvent(input$btnDelete, {
-    #   req(!is.null(input$table_rows_selected))
+
+    observeEvent(input$btnDelete, {
+      req(input$table_rows_selected)
+      print(paste0("would have deleted id# ", selectedRow()$file_upload_id))
+    })
+    
     #   index <- input$table_rows_selected
     #   if (length(index)) {
     #     selectedRow <<- isolate(myTable()[index,])
