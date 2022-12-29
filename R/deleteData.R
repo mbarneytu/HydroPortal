@@ -29,7 +29,6 @@ deleteDataServer <- function(id, selectedSiteId) {
     observeEvent(input$table_rows_selected,{
       selectedRow <<- reactive(myTable()[input$table_rows_selected,])
     })
-    
 
     observeEvent(input$btnDelete, {
       req(input$table_rows_selected)
