@@ -21,7 +21,7 @@ deleteDataServer <- function(id, selectedSiteId) {
 
     output$table <- renderDT({
       datatable(myTable() |> select(!file_upload_id), 
-                selection = "single")
+                selection = "single", rownames = FALSE)
     })
 
     selectedRow <- reactive(tibble())
