@@ -4,6 +4,7 @@ library(plotly)
 library(scales)
 library(lubridate)
 library(shinyFeedback)
+library(vroom)
 
 dataViewerUI <- function(id) {
   ns <- NS(id)
@@ -28,6 +29,9 @@ dataViewerUI <- function(id) {
         fluidRow(
           DTOutput(ns("table"))
         ),
+        fluidRow(
+          downloadButton(ns("btnExport"), label = "Export to .csv")
+        )
       ),
     ),
   )
@@ -65,8 +69,10 @@ dataViewerServer <- function(id, selectedSiteId) {
     )
     })
 
+    observations <- reactive(tibble())
+    
     observeEvent(input$dateRange, {
-      observations <- reactive(
+      observations <<- reactive(
         loadObservations(selectedSiteId(),
                          input$dateRange[1], input$dateRange[2])
       )
@@ -88,5 +94,14 @@ dataViewerServer <- function(id, selectedSiteId) {
         ggplotly(p)
       })
     }, ignoreInit = TRUE)
+    
+    output$btnExport <- downloadHandler(
+      filename = function() {
+        "data.csv"
+      },
+      content = function(file) {
+        vroom::vroom_write(observations(), file, ",")
+      }
+    )
   })
 }
