@@ -19,9 +19,12 @@ dataViewerUI <- function(id) {
     navlistPanel(
       widths = c(2, 10),
       tabPanel(
-        "Plot",
+        "Plots",
         fluidRow(
-          plotlyOutput(ns("plot"))
+          plotlyOutput(ns("cfsPlot"))
+        ),
+        fluidRow(
+          plotlyOutput(ns("tempPlot"))
         )
       ),
       tabPanel(
@@ -56,17 +59,17 @@ dataViewerServer <- function(id, selectedSiteId) {
 
       start_dt <- maxDateRange()$min_dt
 
-    if ( (!is.na(maxMinus90)) & (maxMinus90 > maxDateRange()$min_dt) ) {
-        start_dt <- maxMinus90
-    }
-
-    updateDateRangeInput(
-      inputId = "dateRange",
-      start = start_dt,
-      end = maxDateRange()$max_dt,
-      min = maxDateRange()$min_dt,
-      max = maxDateRange()$max_dt
-    )
+      if ( (!is.na(maxMinus90)) & (maxMinus90 > maxDateRange()$min_dt) ) {
+          start_dt <- maxMinus90
+      }
+  
+      updateDateRangeInput(
+        inputId = "dateRange",
+        start = start_dt,
+        end = maxDateRange()$max_dt,
+        min = maxDateRange()$min_dt,
+        max = maxDateRange()$max_dt
+      )
     })
 
     observations <- reactive(tibble())
@@ -82,17 +85,33 @@ dataViewerServer <- function(id, selectedSiteId) {
         observations()
       }, rownames = FALSE)
 
-      output$plot <- renderPlotly({
+      output$cfsPlot <- renderPlotly({
         validateDates(input$dateRange[1], input$dateRange[2])
 
-        p <- ggplot(observations()) +
-          geom_line(aes(datetime, cfs), color = "blue", linewidth = 0.2) +
-          geom_line(aes(datetime, temperature_C), color = "red", linewidth = 0.2) +
-          scale_y_continuous(labels = label_number()) +
-          scale_x_datetime(name = "")
-
-        ggplotly(p)
+        plot_ly(observations(), 
+                type = "scatter", mode = "lines") |> 
+          layout(showlegend = FALSE, 
+                 xaxis = list(title = list(text = NULL)), 
+                 yaxis = list(title = list(text = "CFS", 
+                                           font = list(color = "blue")))) |> 
+          add_trace(x = ~datetime, y = ~cfs, 
+                    line = list(color = "blue"), name = "CFS")
+        
       })
+      
+      output$tempPlot <- renderPlotly({
+        validateDates(input$dateRange[1], input$dateRange[2])
+        
+        plot_ly(observations(), 
+                type = "scatter", mode = "lines") |> 
+          layout(showlegend = FALSE, 
+                 xaxis = list(title = list(text = NULL)), 
+                 yaxis = list(title = list(text = "Deg C", 
+                                           font = list(color = "red")))) |> 
+          add_trace(x = ~datetime, y = ~temperature_C, 
+                    line = list(color = "red"), name = "Deg C")
+      })
+
     }, ignoreInit = TRUE)
     
     output$btnExport <- downloadHandler(
