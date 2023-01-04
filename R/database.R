@@ -37,7 +37,9 @@ loadSessionIds <- function(expiry = 7) {
 }
 
 loadSites <- function() {
-  query <- "SELECT lat, lon, site_name, site_id FROM site"
+  query <- "SELECT site_id, site_name, user_site_id, active_datetime, lat, lon, 
+  contact_name, contact_email, landowner, equipment_desc, notes FROM site"
+  
   res <- as_tibble(dbGetQuery(pool, query))
 }
 
@@ -53,6 +55,27 @@ saveSite <- function(input, coords) {
                  input$landowner,
                  input$equipment,
                  input$notes
+  )
+  
+  dbExecute(pool, query, params)
+}
+
+updateSite <- function(input, coords, site_id) {
+  query <- paste0("UPDATE site SET site_name = ?, user_site_id = ?, 
+    active_datetime = ?, lat = ?, lon = ?, contact_name = ?, contact_email = ?, 
+    landowner = ?, equipment_desc = ?, notes = ? WHERE site_id = ?"
+  )
+  params <- list(input$site_name,
+                 input$user_site_id,
+                 input$install_date,
+                 coords$lat(),
+                 coords$long(),
+                 input$contact_name,
+                 input$contact_email,
+                 input$landowner,
+                 input$equipment,
+                 input$notes,
+                 site_id
   )
   
   dbExecute(pool, query, params)
@@ -113,7 +136,7 @@ saveObservations <- function(tibl, siteId, fileName, filePath) {
 
 getSiteDateRange <- function(siteId) {
   boundsQuery <- paste0("SELECT MIN(meas_datetime) AS min_dt, 
-    MAX(meas_datetime) AS max_dt FROM `observation` WHERE site_id = ", siteId)
+    MAX(meas_datetime) AS max_dt FROM observation WHERE site_id = ", siteId)
   
   bounds <- dbGetQuery(pool, boundsQuery)
 }

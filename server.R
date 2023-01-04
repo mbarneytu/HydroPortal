@@ -40,6 +40,8 @@ server <- function(input, output, session) {
   uploaderServer("uploader", selectedSite)
   
   deleteDataServer("deleteData", selectedSite)
+  
+  editSiteServer("editSite", selectedSite)
 
   observeEvent(input$innerTabs, {
     if (input$innerTabs == "selectSite") {
