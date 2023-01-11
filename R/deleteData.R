@@ -51,7 +51,7 @@ deleteDataServer <- function(id, selectedSite) {
     
     observeEvent(input$btnConfirmDel, {
       deleteUpload(selectedRow()$file_upload_id)
-      myTable <<- loadUploads(selectedSite()$site_id)
+      myTable <<- reactive(loadUploads(selectedSite()$site_id))
       removeModal()
     })
 
