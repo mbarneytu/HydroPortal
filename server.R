@@ -22,7 +22,7 @@ server <- function(input, output, session) {
   selectedSite <- reactiveVal()
   
   observeEvent(gageSites, {
-    sitePickerServer("sitePicker", gageSites(), selectedSite)
+    sitePickerServer("sitePicker", gageSites, selectedSite)
   })
   
   output$siteName <- renderText(selectedSite()$site_name)
