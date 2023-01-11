@@ -37,7 +37,8 @@ loadSessionIds <- function(expiry = 7) {
 }
 
 loadSites <- function() {
-  query <- "SELECT lat, lon, site_name, site_id FROM site"
+  query <- "SELECT site_id, site_name, user_site_id, active_datetime, lat, lon, 
+  contact_name, contact_email, landowner, equipment_desc, notes FROM site"
   res <- as_tibble(dbGetQuery(pool, query))
 }
 
