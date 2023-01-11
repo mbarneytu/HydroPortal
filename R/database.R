@@ -100,7 +100,7 @@ saveObservations <- function(tibl, siteId, fileName, filePath) {
       quotedTibl <- quotedTibl |> mutate(file_upload_id = fileUploadId[1,1])
       
       # Save the observations to the db, using sqlAppendTable for performance.
-      query <- sqlAppendTable(conn, "observation", quotedTibl)
+      query <- sqlAppendTable(conn, "observation", quotedTibl, row.names = NA)
       dbExecute(conn, query)
       
       showNotification("Data uploaded successfully.", type = "message")
