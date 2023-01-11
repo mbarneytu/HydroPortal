@@ -49,9 +49,9 @@ validateDates <- function(start, end) {
   req(isValidRange)
 }
 
-dataViewerServer <- function(id, selectedSiteId) {
+dataViewerServer <- function(id, selectedSite) {
   moduleServer(id, function(input, output, session) {
-    maxDateRange <- reactive(getSiteDateRange(selectedSiteId()))
+    maxDateRange <- reactive(getSiteDateRange(selectedSite()$site_id))
 
     # Limit date range to the most recent 90 days' data
     observeEvent(maxDateRange, {
@@ -76,7 +76,7 @@ dataViewerServer <- function(id, selectedSiteId) {
     
     observeEvent(input$dateRange, {
       observations <<- reactive(
-        loadObservations(selectedSiteId(),
+        loadObservations(selectedSite()$site_id,
                          input$dateRange[1], input$dateRange[2])
       )
 

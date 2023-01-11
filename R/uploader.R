@@ -38,7 +38,7 @@ resetUploaderUI <- function(output) {
   output$latestDate <- renderText("")
 }
 
-uploaderServer <- function(id, selectedSiteId) {
+uploaderServer <- function(id, selectedSite) {
   moduleServer(id, function(input, output, session) {
 
     csvFile <- reactive({
@@ -86,7 +86,7 @@ uploaderServer <- function(id, selectedSiteId) {
     observeEvent(input$btnSave, {
       req(csvFile)
 
-      saveObservations(csvFile(), selectedSiteId(), fileName(), filePath())
+      saveObservations(csvFile(), selectedSite()$site_id, fileName(), filePath())
 
       resetUploaderUI(output)
       shinyjs::toggle("previewDiv")

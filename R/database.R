@@ -37,7 +37,8 @@ loadSessionIds <- function(expiry = 7) {
 }
 
 loadSites <- function() {
-  query <- "SELECT lat, lon, site_name, site_id FROM site"
+  query <- "SELECT site_id, site_name, user_site_id, active_datetime, lat, lon, 
+  contact_name, contact_email, landowner, equipment_desc, notes FROM site"
   res <- as_tibble(dbGetQuery(pool, query))
 }
 
@@ -99,7 +100,7 @@ saveObservations <- function(tibl, siteId, fileName, filePath) {
       quotedTibl <- quotedTibl |> mutate(file_upload_id = fileUploadId[1,1])
       
       # Save the observations to the db, using sqlAppendTable for performance.
-      query <- sqlAppendTable(conn, "observation", quotedTibl)
+      query <- sqlAppendTable(conn, "observation", quotedTibl, row.names = NA)
       dbExecute(conn, query)
       
       showNotification("Data uploaded successfully.", type = "message")

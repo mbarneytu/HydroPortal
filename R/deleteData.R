@@ -15,9 +15,9 @@ deleteDataUI <- function(id) {
   )
 }
 
-deleteDataServer <- function(id, selectedSiteId) {
+deleteDataServer <- function(id, selectedSite) {
   moduleServer(id, function(input, output, session) {
-    myTable <- reactive(loadUploads(selectedSiteId()))
+    myTable <- reactive(loadUploads(selectedSite()$site_id))
 
     output$table <- renderDT({
       datatable(myTable() |> select(!file_upload_id), 
@@ -51,7 +51,7 @@ deleteDataServer <- function(id, selectedSiteId) {
     
     observeEvent(input$btnConfirmDel, {
       deleteUpload(selectedRow()$file_upload_id)
-      myTable <<- reactive(loadUploads(selectedSiteId()))
+      myTable <<- reactive(loadUploads(selectedSite()$site_id))
       removeModal()
     })
 

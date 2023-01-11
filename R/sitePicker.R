@@ -9,8 +9,10 @@ sitePickerInput <- function(id) {
   )
 }
 
-sitePickerServer <- function(id, gageSites) {
+sitePickerServer <- function(id, gageSites, selectedSite) {
   moduleServer(id, function(input, output, session) {
+    stopifnot(!is.reactive(gageSites))
+    stopifnot(is.reactive(selectedSite))
     
     # Here we use Shiny.setInputValue() to set up a reactive input from the 
     # server. (see: shiny.rstudio.com/articles/communicating-with-js.html)
@@ -34,17 +36,20 @@ sitePickerServer <- function(id, gageSites) {
         fitBounds(-125.1, 49, -67.1, 25.2) |> 
         
         addMarkers(
-          lng = gageSites()$lon, lat = gageSites()$lat,
-          label = gageSites()$site_name,
-          layerId = gageSites()$site_id,
+          lng = gageSites$lon, lat = gageSites$lat,
+          label = gageSites$site_name,
+          layerId = gageSites$site_id,
           popup = paste(
-            "<b>", gageSites()$site_name, "</b></br>",
+            "<b>", gageSites$site_name, "</b></br>",
             viewDataLink
           )
         )
     })
 
-    # Return the site_id for the clicked marker
-    mySite <- eventReactive(input$link, input$map_marker_click$id)
+    # When the link is clicked, update selectedSite value
+    observeEvent(input$link, {
+      selectedSite(gageSites |>
+                     filter(site_id == input$map_marker_click$id))
+    })
   })
 }

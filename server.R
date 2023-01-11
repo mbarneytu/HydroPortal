@@ -14,29 +14,23 @@ server <- function(input, output, session) {
     }
   })
   
-  createSiteServer("createSite", gageSites)
-  
   # Load all sites from the database
   gageSites <- reactiveVal(loadSites())
   
-  # Store the user's currently-selected site in a reactive
-  selectedSite <- sitePickerServer("sitePicker", gageSites)
+  createSiteServer("createSite", gageSites)
+
+  selectedSite <- reactiveVal()
+  
+  observeEvent(gageSites, {
+    sitePickerServer("sitePicker", gageSites(), selectedSite)
+  })
   
   observeEvent(selectedSite(), {
     updateTabsetPanel(inputId = "outerTabs", selected = "siteDataView")
-  })
-
-  output$siteName <- renderText({
-    as.character(gageSites() |> 
-                   filter(site_id == selectedSite()) |> 
-                   select(site_name)
-                 )
-  })
-  
-  observeEvent(selectedSite(), {
+    output$siteName <- renderText(selectedSite()$site_name)
     dataViewerServer("dataViewer", selectedSite)
   })
-  
+
   uploaderServer("uploader", selectedSite)
   
   deleteDataServer("deleteData", selectedSite)
