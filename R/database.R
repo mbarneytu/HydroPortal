@@ -104,11 +104,11 @@ saveObservations <- function(tibl, siteId, fileName, filePath) {
       dbExecute(conn, query)
       
       showNotification("Data uploaded successfully.", type = "message")
+      return(list(success = TRUE, message = ""))
     }),
     error = function(cnd) {
-      showNotification(paste0("Error saving to database: ",
-                              substr(cnd$message, 1, 200)),
-                       type = "error")
+      errorMsg <- substr(cnd$message, 1, 450)
+      return(list(success = FALSE, message = errorMsg))
     })
 }
 

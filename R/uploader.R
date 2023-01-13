@@ -86,11 +86,25 @@ uploaderServer <- function(id, selectedSite) {
     observeEvent(input$btnSave, {
       req(csvFile)
 
-      saveObservations(csvFile(), selectedSite()$site_id, fileName(), filePath())
+      result <- saveObservations(csvFile(), selectedSite()$site_id, 
+                                 fileName(), filePath())
+      if (!result$success) {
+        ns <- session$ns
+        modal_errormsg <- modalDialog(
+          h4("The following error was returned by the database:"), 
+          p(result$message),
+          title = h3("Data was not saved", style = "color:red"),
+          footer = tagList(
+            modalButton("Ok")
+          )
+        )
+        showModal(modal_errormsg)
+      }
 
-      resetUploaderUI(output)
-      shinyjs::toggle("previewDiv")
-      
+      else {
+        resetUploaderUI(output)
+        shinyjs::toggle("previewDiv")
+      }
     })
   })
 }
