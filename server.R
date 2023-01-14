@@ -12,7 +12,7 @@ server <- function(input, output, session) {
     else {
       disableEdits()
     }
-  })
+  }, ignoreInit = TRUE)
   
   # Load all sites from the database
   gageSites <- reactiveVal(loadSites())
