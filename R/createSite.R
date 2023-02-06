@@ -1,6 +1,7 @@
 library(shiny)
 library(shinyFeedback)
 library(leaflet)
+library(shinyBS)
 
 createSiteUI <- function(id) {
   tagList(
@@ -8,18 +9,24 @@ createSiteUI <- function(id) {
     h6("Required fields are marked with *"),
     fluidRow(
       column(
-        width = 6,
-        textInput(NS(id, "user_site_id"), "*Site ID", width = "90%"), 
-        textInput(NS(id, "site_name"), "*Site Name", width = "90%"),
-        textInput(NS(id, "contact_name"), "*TU Staff Contact Name", width = "90%"),
-        textInput(NS(id, "contact_email"), "*TU Staff Contact Email", width = "90%"),
-        dateInput(NS(id, "install_date"), "*Date of installation", width = "90%"),
-        textAreaInput(NS(id, "equipment"), "Equipment", width = "90%"),
-        textInput(NS(id, "landowner"), "Landowner", width = "90%"),
-        textAreaInput(NS(id, "notes"), "Notes", width = "90%"),
+        width = 5,
+        textInput(NS(id, "user_site_id"), "*Site ID"), 
+        bsTooltip(NS(id, "user_site_id"), 
+                  paste0("Site ID must be unique. ", 
+                                                 "For example: MI02")),
+        textInput(NS(id, "site_name"), "*Site Name"),
+        bsTooltip(NS(id, "site_name"), 
+                  paste0("Site Name is intended to be more descriptive and need",
+                         " not be unique. For example: Mill Creek at Falls")),
+        textInput(NS(id, "contact_name"), "*TU Staff Contact Name"),
+        textInput(NS(id, "contact_email"), "*TU Staff Contact Email"),
+        dateInput(NS(id, "install_date"), "*Date of installation"),
+        textAreaInput(NS(id, "equipment"), "Equipment"),
+        textInput(NS(id, "landowner"), "Landowner"),
+        textAreaInput(NS(id, "notes"), "Notes"),
       ),
       column(
-        width = 6,
+        width = 7,
         siteCoordsUI(NS(id, "siteCoords"))
       )
     ),
