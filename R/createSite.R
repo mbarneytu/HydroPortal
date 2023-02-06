@@ -1,6 +1,7 @@
 library(shiny)
 library(shinyFeedback)
 library(leaflet)
+library(shinyBS)
 
 createSiteUI <- function(id) {
   tagList(
@@ -10,7 +11,13 @@ createSiteUI <- function(id) {
       column(
         width = 6,
         textInput(NS(id, "user_site_id"), "*Site ID", width = "90%"), 
+        bsTooltip(NS(id, "user_site_id"), 
+                  paste0("Site ID must be unique. ", 
+                                                 "For example: MI02")),
         textInput(NS(id, "site_name"), "*Site Name", width = "90%"),
+        bsTooltip(NS(id, "site_name"), 
+                  paste0("Site Name is intended to be more descriptive and need",
+                         " not be unique. For example: Mill Creek at Falls")),
         textInput(NS(id, "contact_name"), "*TU Staff Contact Name", width = "90%"),
         textInput(NS(id, "contact_email"), "*TU Staff Contact Email", width = "90%"),
         dateInput(NS(id, "install_date"), "*Date of installation", width = "90%"),
