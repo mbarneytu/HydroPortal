@@ -30,7 +30,8 @@ ui <- fluidPage(
             id = "innerTabs",
             type = "pills",
             header = list(
-              h3(textOutput("siteName"), br())
+              h3(textOutput("siteID")), 
+              br()
             ),
             tabPanel(title = "View",
                      value = "viewDataTab",
