@@ -37,10 +37,13 @@ sitePickerServer <- function(id, gageSites, selectedSite) {
         
         addMarkers(
           lng = gageSites()$lon, lat = gageSites()$lat,
-          label = gageSites()$site_name,
+          label = paste0(gageSites()$user_site_id, " - ", gageSites()$site_name),
           layerId = gageSites()$site_id,
-          popup = paste(
-            "<b>", gageSites()$site_name, "</b></br>",
+          popup = paste0(
+            "<b>", 
+            gageSites()$user_site_id, " - ", gageSites()$site_name, 
+            "</b>",
+            "</br>",
             viewDataLink
           )
         )

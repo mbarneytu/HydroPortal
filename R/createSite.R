@@ -9,13 +9,11 @@ createSiteUI <- function(id) {
     fluidRow(
       column(
         width = 6,
+        textInput(NS(id, "user_site_id"), "*Site ID", width = "90%"), 
         textInput(NS(id, "site_name"), "*Site Name", width = "90%"),
-        # selectInput(NS(id, "basin"), "*Basin", ),
-        # selectInput(NS(id, "subbasin"), "*Subbasin", ),
         textInput(NS(id, "contact_name"), "*TU Staff Contact Name", width = "90%"),
         textInput(NS(id, "contact_email"), "*TU Staff Contact Email", width = "90%"),
         dateInput(NS(id, "install_date"), "*Date of installation", width = "90%"),
-        textInput(NS(id, "user_site_id"), "Site ID", width = "90%"), 
         textAreaInput(NS(id, "equipment"), "Equipment", width = "90%"),
         textInput(NS(id, "landowner"), "Landowner", width = "90%"),
         textAreaInput(NS(id, "notes"), "Notes", width = "90%"),
@@ -35,6 +33,7 @@ createSiteUI <- function(id) {
 }
 
 validateSite <- function(input, lat, long){
+  feedbackWarning("user_site_id", input$user_site_id == "", "Value is required")
   feedbackWarning("site_name", input$site_name == "", "Value is required")
   feedbackWarning("install_date", toString(input$install_date) == "", "Value is required")
   feedbackWarning("contact_name", input$contact_name == "",
@@ -46,8 +45,9 @@ validateSite <- function(input, lat, long){
   # message(glue::glue("lat:{lat}"))
   
   req(
-    input$site_name,
-    input$install_date,
+      input$user_site_id,
+      input$site_name,
+      input$install_date,
     # (input$lat > 25 & input$lat < 50),
     # (input$long > -125.1 & input$long < -67.1),
     input$contact_name,
@@ -56,9 +56,8 @@ validateSite <- function(input, lat, long){
 }
 
 resetCreateUI <- function() {
+  updateTextInput(inputId = "user_site_id", value = "")
   updateTextInput(inputId = "site_name", value = "")
-  # updateSelectInput("basin")
-  # updateSelectInput("subbasin")
   updateTextInput(inputId = "contact_name", value = "")
   updateTextInput(inputId = "contact_email", value = "")
   updateDateInput(inputId = "install_date", value = NULL)

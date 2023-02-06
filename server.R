@@ -23,8 +23,9 @@ server <- function(input, output, session) {
   
   sitePickerServer("sitePicker", gageSites, selectedSite)
 
-  output$siteName <- renderText(selectedSite()$site_name)
-  
+  output$siteID <- renderText(paste0(selectedSite()$user_site_id, " - ",
+                                     selectedSite()$site_name))
+
   observeEvent(selectedSite(), {
     updateTabsetPanel(inputId = "outerTabs", selected = "siteDataView")
     dataViewerServer("dataViewer", selectedSite)
