@@ -128,14 +128,14 @@ loadObservations <- function(siteId, start, end) {
   minute(end) <- 59
 
   obsQuery <- paste0("SELECT meas_datetime as datetime, 
-    discharge_cfs as cfs, temperature_C 
+    discharge_cfs as cfs, stage_ft, temperature_C 
     FROM observation WHERE site_id = ", siteId)
   observations <- as_tibble(dbGetQuery(pool, obsQuery))
   
   obs <- as_tibble(
     observations |> 
       filter(datetime >= start & datetime <= end) |>
-      select(datetime, cfs, temperature_C)
+      select(datetime, cfs, stage_ft, temperature_C)
   )
 }
 
