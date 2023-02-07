@@ -21,10 +21,7 @@ dataViewerUI <- function(id) {
       tabPanel(
         "Plots",
         fluidRow(
-          plotlyOutput(ns("cfsPlot"))
-        ),
-        fluidRow(
-          plotlyOutput(ns("tempPlot"))
+          plotlyOutput(ns("plots"))
         )
       ),
       tabPanel(
@@ -74,6 +71,18 @@ dataViewerServer <- function(id, selectedSite) {
 
     observations <- reactive(tibble())
     
+    generate_subplot <- function(var, label, color){
+      plot_ly(observations(), x = ~datetime, y = as.formula(paste0("~", var))) |> 
+        add_lines(name = label, line = list(color = color)) |> 
+        layout(showlegend = FALSE, 
+               hovermode = "x",
+               height = "600",
+               xaxis = list(title = list(text = NULL)), 
+               yaxis = list(title = list(text = label,
+                                         font = list(color = color)))
+        )
+    }
+    
     observeEvent(input$dateRange, {
       observations <<- reactive(
         loadObservations(selectedSite()$site_id,
@@ -85,31 +94,16 @@ dataViewerServer <- function(id, selectedSite) {
         observations()
       }, rownames = FALSE)
 
-      output$cfsPlot <- renderPlotly({
+      output$plots <- renderPlotly({
         validateDates(input$dateRange[1], input$dateRange[2])
 
-        plot_ly(observations(), 
-                type = "scatter", mode = "lines") |> 
-          layout(showlegend = FALSE, 
-                 xaxis = list(title = list(text = NULL)), 
-                 yaxis = list(title = list(text = "CFS", 
-                                           font = list(color = "blue")))) |> 
-          add_trace(x = ~datetime, y = ~cfs, 
-                    line = list(color = "blue"), name = "CFS")
+        cfs_plot <- generate_subplot("cfs", "CFS", "blue")
+        stage_plot <- generate_subplot("stage_ft", "Stage ft", "green")
+        temp_plot <- generate_subplot("temperature_C", "Temp C", "red")
         
-      })
-      
-      output$tempPlot <- renderPlotly({
-        validateDates(input$dateRange[1], input$dateRange[2])
-        
-        plot_ly(observations(), 
-                type = "scatter", mode = "lines") |> 
-          layout(showlegend = FALSE, 
-                 xaxis = list(title = list(text = NULL)), 
-                 yaxis = list(title = list(text = "Deg C", 
-                                           font = list(color = "red")))) |> 
-          add_trace(x = ~datetime, y = ~temperature_C, 
-                    line = list(color = "red"), name = "Deg C")
+        myplots <- list(cfs_plot, stage_plot, temp_plot)
+        subplot(myplots, nrows = length(myplots), shareX = TRUE, 
+                titleX = FALSE, titleY = TRUE)
       })
 
     }, ignoreInit = TRUE)
