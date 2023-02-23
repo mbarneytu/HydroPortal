@@ -72,11 +72,11 @@ dataViewerServer <- function(id, selectedSite) {
     observations <- reactive(tibble())
     
     generate_subplot <- function(var, label, color){
-      plot_ly(observations(), x = ~datetime, y = as.formula(paste0("~", var))) |> 
+      plot_ly(observations(), x = ~datetime, y = as.formula(paste0("~", var)),
+              height = "600") |> 
         add_lines(name = label, line = list(color = color)) |> 
         layout(showlegend = FALSE, 
                hovermode = "x",
-               height = "600",
                xaxis = list(title = list(text = NULL)), 
                yaxis = list(title = list(text = label,
                                          font = list(color = color)))
@@ -91,7 +91,8 @@ dataViewerServer <- function(id, selectedSite) {
 
       output$table <- renderDT({
         validateDates(input$dateRange[1], input$dateRange[2])
-        observations()
+        observations() |> 
+          mutate(datetime = as.character.POSIXt(datetime, format = "%m/%d/%Y %H:%M:%S"))
       }, rownames = FALSE)
 
       output$plots <- renderPlotly({

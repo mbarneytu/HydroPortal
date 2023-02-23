@@ -20,7 +20,7 @@ createSiteUI <- function(id) {
                          " not be unique. For example: Mill Creek at Falls")),
         textInput(NS(id, "contact_name"), "*TU Staff Contact Name"),
         textInput(NS(id, "contact_email"), "*TU Staff Contact Email"),
-        dateInput(NS(id, "install_date"), "*Date of installation"),
+        dateInput(NS(id, "install_date"), "*Date of installation", format = "m/d/yyyy",),
         textAreaInput(NS(id, "equipment"), "Equipment"),
         textInput(NS(id, "landowner"), "Landowner"),
         textAreaInput(NS(id, "notes"), "Notes"),
