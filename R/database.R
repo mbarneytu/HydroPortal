@@ -134,8 +134,7 @@ loadObservations <- function(siteId, start, end) {
   
   obs <- as_tibble(
     observations |> 
-      filter(datetime >= start & datetime <= end) |>
-      select(datetime, cfs, stage_ft, temperature_C)
+      filter(datetime >= start & datetime <= end)
   )
 }
 

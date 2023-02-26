@@ -114,7 +114,12 @@ dataViewerServer <- function(id, selectedSite) {
         "data.csv"
       },
       content = function(file) {
-        vroom::vroom_write(observations(), file, ",")
+        vroom::vroom_write(observations() |> transmute(
+          date = as.character.POSIXt(datetime, format = "%m/%d/%Y"), 
+          time = as.character.POSIXt(datetime, format = "%H:%M:%S"),
+          stage_ft, temperature_C, cfs),
+          file, delim = ",", 
+          bom = TRUE) #Byte Order Mark is recommended for Excel
       }
     )
   })
