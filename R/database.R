@@ -145,7 +145,12 @@ loadUploads <- function(siteId) {
                   FROM file_upload
                   WHERE deleted_datetime IS NULL AND site_id = ", 
                   siteId, " ORDER BY upload_datetime DESC")
-  upload <- as_tibble(dbGetQuery(pool, query))
+  upload <- as_tibble(dbGetQuery(pool, query)) |> 
+    mutate(
+      upload_datetime = as.character.POSIXt(upload_datetime, format = "%m/%d/%Y %H:%M:%S"),
+      obs_min_datetime = as.character.POSIXt(obs_min_datetime, format = "%m/%d/%Y %H:%M:%S"),
+      obs_max_datetime = as.character.POSIXt(obs_max_datetime, format = "%m/%d/%Y %H:%M:%S")
+    )
 }
 
 deleteUpload <- function(file_upload_id) {

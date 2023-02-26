@@ -36,9 +36,9 @@ deleteDataServer <- function(id, selectedSite) {
       ns <- session$ns
       modal_confirm <- modalDialog(
         paste0("Are you sure you want to delete ",
-               selectedRow()$row_count, " rows, including data between ",
-               selectedRow()$obs_min_datetime |> as_date(), " and ",
-               selectedRow()$obs_max_datetime |> as_date(),
+               selectedRow()$row_count, " rows, including observations between ",
+               selectedRow()$obs_min_datetime, " and ",
+               selectedRow()$obs_max_datetime,
                "?"),
         title = "Deleting datapoints",
         footer = tagList(
