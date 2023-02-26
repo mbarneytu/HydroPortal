@@ -21,7 +21,10 @@ deleteDataServer <- function(id, selectedSite) {
 
     output$table <- renderDT({
       datatable(myTable() |> select(!file_upload_id), 
-                selection = "single", rownames = FALSE)
+                selection = "single", rownames = FALSE, 
+                # upload_datetime assigned the timezone where the database
+                # server resides (currently ET), so label it accordingly:
+                colnames = c("upload_datetime (ET)" = "upload_datetime"))
     })
 
     selectedRow <- reactive(tibble())
