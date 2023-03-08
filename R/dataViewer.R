@@ -11,10 +11,11 @@ dataViewerUI <- function(id) {
   tagList(
     shinyFeedback::useShinyFeedback(),
     fluidRow(
-      dateRangeInput(
-        ns("dateRange"), 
-        "Date Range"
-      ),
+        dateRangeInput(
+          ns("dateRange"), 
+          "Filter by Date Range",
+          format = "mm/dd/yyyy"
+        ),
     ),
     navlistPanel(
       widths = c(2, 10),
@@ -48,25 +49,31 @@ validateDates <- function(start, end) {
 
 dataViewerServer <- function(id, selectedSite) {
   moduleServer(id, function(input, output, session) {
-    maxDateRange <- reactive(getSiteDateRange(selectedSite()$site_id))
+    
+    # Determine how much data exist for the selected site_id
+    siteDateRange <- reactive(getSiteDateRange(selectedSite()$site_id))
 
-    # Limit date range to the most recent 90 days' data
-    observeEvent(maxDateRange, {
-      maxMinus90 <- maxDateRange()$max_dt - ddays(90)
-
-      start_dt <- maxDateRange()$min_dt
-
-      if ( (!is.na(maxMinus90)) & (maxMinus90 > maxDateRange()$min_dt) ) {
-          start_dt <- maxMinus90
+    observeEvent(siteDateRange, {
+      
+      if (is.null(siteDateRange)) {
+        # No observations exist; set the dateRange control to today's date
+        updateDateRangeInput(
+          inputId = "dateRange",
+          start = today(),
+          end = today(),
+          min = today(),
+          max = today()
+        )
+      } else { 
+        # Set reasonable date range default values
+        updateDateRangeInput(
+          inputId = "dateRange",
+          start = siteDateRange()$viewStartDt,
+          end = siteDateRange()$latestDt,
+          min = siteDateRange()$earliestDt,
+          max = siteDateRange()$latestDt
+        )  
       }
-  
-      updateDateRangeInput(
-        inputId = "dateRange",
-        start = start_dt,
-        end = maxDateRange()$max_dt,
-        min = maxDateRange()$min_dt,
-        max = maxDateRange()$max_dt
-      )
     })
 
     observations <- reactive(tibble())

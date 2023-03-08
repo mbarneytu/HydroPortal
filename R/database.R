@@ -113,29 +113,62 @@ saveObservations <- function(tibl, siteId, fileName, filePath) {
 }
 
 getSiteDateRange <- function(siteId) {
-  boundsQuery <- paste0("SELECT MIN(meas_datetime) AS min_dt, 
-    MAX(meas_datetime) AS max_dt FROM `observation` WHERE site_id = ", siteId)
   
-  bounds <- dbGetQuery(pool, boundsQuery)
+  # Get the date range of observations for the given siteId.
+  obsDateRange <- dbGetQuery(pool, paste0(
+    "SELECT MIN(meas_datetime) AS earliestDt, 
+    MAX(meas_datetime) AS latestDt
+    FROM `observation` 
+    WHERE site_id = ", siteId))
+  
+  # If there are no observations, return NULL
+  if (is.na(obsDateRange$earliestDt)) {
+    return(NULL)
+  }
+  
+  # Select a date limit on the number of observations to view, in days.
+  dayLimit <- 90
+  
+  if (obsDateRange$latestDt - obsDateRange$earliestDt > dayLimit) {
+    viewStartDt <- (obsDateRange$latestDt - lubridate::ddays(dayLimit))
+  } else {
+    viewStartDt <- obsDateRange$earliestDt
+  }
+  
+  obsDateRange <- as_tibble(obsDateRange) |> 
+    mutate(viewStartDt = viewStartDt) # add column for the computed start datetime
 }
 
-loadObservations <- function(siteId, start, end) {
+loadObservations <- function(siteId, start = NULL, end = NULL) {
+  # if start and end are specified, add hh:mm and query with datetimes in the WHERE clause
+  # if not specified, use getSiteDateRange for the WHERE clause
+  # if no data, ... do we need to handle?
   
-  # Set hours and minutes so that start and end include full days' data
-  hour(start) <- 0 
-  minute(start) <- 0
-  hour(end) <- 23
-  minute(end) <- 59
+  # use the start and end dates, if supplied
+  if (!(is.null(start) && is.null(end))) {
+    # Set hours and minutes so that start and end include full days' data
+    hour(start) <- 0 
+    minute(start) <- 0
+    hour(end) <- 23
+    minute(end) <- 59
+    
+  } else { # start and end not specified; look up a reasonable date range
+    siteDateRange <- getSiteDateRange(siteId)
+    if (is.null(siteDateRange)) { # no observations in db
+      return(NULL)
+    }
+    start <- siteDateRange$viewStartDt
+    end <- siteDateRange$latestDt
+  }
 
   obsQuery <- paste0("SELECT meas_datetime as datetime, 
     discharge_cfs as cfs, stage_ft, temperature_C 
-    FROM observation WHERE site_id = ", siteId)
-  observations <- as_tibble(dbGetQuery(pool, obsQuery))
+    FROM observation WHERE site_id = ", siteId,
+                     " AND meas_datetime >= '", start,
+                     "' AND meas_datetime <= '", end, "'
+                     ORDER BY meas_datetime ASC")
   
-  obs <- as_tibble(
-    observations |> 
-      filter(datetime >= start & datetime <= end)
-  )
+  observations <- as_tibble(dbGetQuery(pool, obsQuery))
 }
 
 loadUploads <- function(siteId) {
