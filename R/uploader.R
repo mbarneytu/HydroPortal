@@ -38,9 +38,11 @@ resetUploaderUI <- function(output) {
   output$latestDate <- renderText("")
 }
 
-uploaderServer <- function(id, selectedSite) {
+uploaderServer <- function(id, selectedSite, observations) {
   moduleServer(id, function(input, output, session) {
-
+    stopifnot(is.reactive(selectedSite))
+    stopifnot(is.reactive(observations))
+    
     csvFile <- reactive({
       req(input$file)
       
@@ -102,8 +104,12 @@ uploaderServer <- function(id, selectedSite) {
       }
 
       else {
+        showNotification("Data uploaded successfully.", type = "message")
         resetUploaderUI(output)
         shinyjs::toggle("previewDiv")
+        
+        # Update the observations reactiveVal from the database
+        observations(loadObservations(selectedSite()$site_id))
       }
     })
   })

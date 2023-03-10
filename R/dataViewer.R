@@ -47,7 +47,7 @@ validateDates <- function(start, end) {
   req(isValidRange)
 }
 
-dataViewerServer <- function(id, selectedSite) {
+dataViewerServer <- function(id, selectedSite, observations) {
   moduleServer(id, function(input, output, session) {
     
     # Determine how much data exist for the selected site_id
@@ -55,7 +55,7 @@ dataViewerServer <- function(id, selectedSite) {
 
     observeEvent(siteDateRange, {
       
-      if (is.null(siteDateRange)) {
+      if (is.null(siteDateRange())) {
         # No observations exist; set the dateRange control to today's date
         updateDateRangeInput(
           inputId = "dateRange",
@@ -76,8 +76,6 @@ dataViewerServer <- function(id, selectedSite) {
       }
     })
 
-    observations <- reactive(tibble())
-    
     generate_subplot <- function(var, label, color){
       plot_ly(observations(), x = ~datetime, y = as.formula(paste0("~", var)),
               height = "600") |> 

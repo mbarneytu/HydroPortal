@@ -20,6 +20,7 @@ server <- function(input, output, session) {
   createSiteServer("createSite", gageSites)
 
   selectedSite <- reactiveVal()
+  siteObservations <- reactiveVal()
   
   sitePickerServer("sitePicker", gageSites, selectedSite)
 
@@ -28,10 +29,15 @@ server <- function(input, output, session) {
 
   observeEvent(selectedSite(), {
     updateTabsetPanel(inputId = "outerTabs", selected = "siteDataView")
-    dataViewerServer("dataViewer", selectedSite)
+    siteObservations(loadObservations(selectedSite()$site_id))
+    dataViewerServer("dataViewer", selectedSite, siteObservations)
   })
 
-  uploaderServer("uploader", selectedSite)
+  uploaderServer("uploader", selectedSite, siteObservations)
+  
+  observeEvent(siteObservations(), {
+    dataViewerServer("dataViewer", selectedSite, siteObservations)
+  })
   
   deleteDataServer("deleteData", selectedSite)
 

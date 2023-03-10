@@ -103,7 +103,6 @@ saveObservations <- function(tibl, siteId, fileName, filePath) {
       query <- sqlAppendTable(conn, "observation", quotedTibl, row.names = NA)
       dbExecute(conn, query)
       
-      showNotification("Data uploaded successfully.", type = "message")
       return(list(success = TRUE, message = ""))
     }),
     error = function(cnd) {
