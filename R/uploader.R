@@ -61,7 +61,7 @@ uploaderServer <- function(id, selectedSite) {
     })
     
     observeEvent(csvFile(), {
-      shinyjs::toggle("previewDiv")
+      shinyjs::showElement("previewDiv")
       output$preview <- renderTable({
         req(csvFile)
         head(csvFile()) |> 
@@ -103,7 +103,7 @@ uploaderServer <- function(id, selectedSite) {
 
       else {
         resetUploaderUI(output)
-        shinyjs::toggle("previewDiv")
+        shinyjs::hideElement("previewDiv")
       }
     })
   })
