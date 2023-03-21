@@ -87,7 +87,7 @@ createSiteServer <- function(id, gageSites) {
       # message(glue::glue("lat:{coords$lat()}"))
       
       tryCatch({
-        saveSite(input, coords)
+        saveSite(input, coords$lat(), coords$long())
         gageSites(loadSites())
         resetCreateUI()
         showNotification("Site saved successfully.", type = "message")

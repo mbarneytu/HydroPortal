@@ -42,13 +42,13 @@ loadSites <- function() {
   res <- as_tibble(dbGetQuery(pool, query))
 }
 
-saveSite <- function(input, coords) {
+saveSite <- function(input, lat, long) {
   query <- paste0("CALL ins_site(?,?,?,?,?,?,?,?,?,?)")
   params <- list(input$site_name,
                  input$user_site_id,
                  input$install_date,
-                 coords$lat(),
-                 coords$long(),
+                 lat,
+                 long,
                  input$contact_name,
                  input$contact_email,
                  input$landowner,
