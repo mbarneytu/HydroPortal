@@ -2,130 +2,157 @@ library(shiny)
 library(shinyFeedback)
 library(leaflet)
 
+# US map bounds
+USSouth <- 25
+USNorth <- 49
+USWest <- -125
+USEast <- -67
+
 siteCoordsUI <- function(id) {
+  ns <- NS(id)
+  useShinyFeedback()
   tagList(
     fluidRow(
-      column(width = 12,
-             h6(
-             "Pan and zoom the map so that your site is centered, then 
-             click 'Place Site at Map Center'. Alternatively, you may enter 
-             coordinates below the map, click 'Zoom to Lat/Long', then click 
-             'Place Site at Map Center'. You may reposition 
-             the site by moving the map and re-clicking 'Place Site at 
-             Map Center'."
-             )
+      column(
+        width = 2,
+        h3("Site Location:")
+      ),
+      column(
+        width = 4,
+        h4("Latitude: "),
+        h4(textOutput(ns("latSelected")))
+      ),
+      column(
+        width = 4,
+        h4("Longitude: "),
+        h4(textOutput(ns("longSelected")))
+      )
+    ),
+    hr(),
+    p("Locate site either by entering coordinates or by clicking the map."),
+    br(),
+    # fluidRow(
+    #   column(
+    #     width = 2,
+    #     radioButtons(
+    #       "coordsOrMap",
+    #       label = "Specify location by:",
+    #       choiceNames = c(
+    #         "Entering site coordinates",
+    #         "Clicking on the map"
+    #       ),
+    #       choiceValues = c(
+    #         "coords",
+    #         "map"
+    #       ),
+    #       selected = "coords"
+    #     )
+    #   ),
+    #   column(
+    #     width = 10,
+    fluidRow(
+      column(
+        offset = 1,
+        width = 2,
+        numericInput(ns("latEntered"), "Lat:", value = ""),#, width = "120px"
+      ),
+      column(
+        width = 2,
+        numericInput(ns("longEntered"), "Long:", value = "")
+      ),
+      column(
+        width = 4,
+        br(),
+        actionButton(ns("btnPlacePin"), "Place Pin", class = "btn-info")
       )
     ),
     fluidRow(
-      column(width = 5, 
-             actionButton(NS(id, "pinBtn"), label = "Place Site at Map Center",
-                          class = "btn-info")
-      ),
-      column(width = 1, 
-             p(tags$b("*Site Lat:"))
-      ),
-      column(width = 2,
-             textOutput(NS(id, "pinLat"))
-      ),
-      column(width = 1,
-             p(tags$b("*Site Long:"))
-      ),
-      column(width = 2,
-             textOutput(NS(id, "pinLong"))
+      column(
+        width = 12,
+        leafletOutput(ns("map"))
       )
     ),
-    
-
-    br(),
-    fluidRow(
-      column(width = 12,
-             leafletOutput(NS(id, "map")))
-    ),
-    
-    br(),
-    fluidRow(
-      column(width = 4,
-             numericInput(NS(id, "inLat"), label = "Lat", value = "", step = "any")
-      ),
-      column(width = 4,
-             numericInput(NS(id, "inLong"), label = "Long", value = "", step = "any")
-      ),
-      column(width = 4,
-             actionButton(NS(id, "zoomBtn"), label = "Zoom to Lat/Long", 
-                          class = "btn-info"))
-    )
+    #   ),
+    # ),
   )
 }
 
-validatePoint <- function(input, minLat, maxLat, minLong, maxLong) {
+validateLatLong <- function(lat, long) {
+  return(
+    dplyr::between(lat, USSouth, USNorth) &&
+      dplyr::between(long, USWest, USEast)
+  )
+}
+
+captureCoordinates <- function(lat, long, output, zoom = 10) {
+  # Zoom to the coordinates and add marker to the map
+  leafletProxy("map") |> 
+    addCircleMarkers(lat = lat,
+                     lng = long,
+                     layerId = "myPin") |> 
+    setView(lat = lat,
+            lng = long, zoom = zoom)
   
-  validLat <- (!is.na(input$inLat)
-               && input$inLat >= minLat
-               && input$inLat <= maxLat
-  )
-  validLong <- (!is.na(input$inLong)
-                && input$inLong >= minLong
-                && input$inLong <= maxLong
-  )
-  
-  feedbackWarning("inLat", !validLat, 
-                  text = paste0("Lat must be between ", 
-                                minLat, " and ", maxLat)
-  )
-  feedbackWarning("inLong", !validLong,
-                  text = paste0("Long must be between ", 
-                                minLong, " and ", maxLong)
-  )
-  req(validLat, validLong)
+  # Update the selected lat/long, without creating a dependency on the 
+  # entered lat/long. 
+  output$latSelected <- renderText(round(lat, digits = 5))
+  output$longSelected <- renderText(round(long, digits = 6))
 }
 
 siteCoordsServer <- function(id) {
   moduleServer(id, function(input, output, session) {
-    minLat <- 25
-    maxLat <- 49
-    minLong <- -125
-    maxLong <- -67
-    centerLat <- 38
-    centerLong <- -96
+    # Make module later, with inCoords a parameter
+    # coords <- siteCoordsServer("siteCoords")
+    
+    inCoords <- list(lat = NA, long = NA)
+    output$latSelected <- renderText(inCoords$lat)
+    output$longSelected <- renderText(inCoords$long)
+    
+    # observeEvent(input$coordsOrMap, {
+    #   shinyjs::toggleState("latEntered", input$coordsOrMap == "coords")
+    #   shinyjs::toggleState("longEntered", input$coordsOrMap == "coords")
+    #   shinyjs::toggleState("btnPlacePin", input$coordsOrMap == "coords")
+    # })
     
     output$map <- renderLeaflet({
       leaflet() |>  
-        
         addProviderTiles(providers$Esri.WorldTopoMap, group = "Topo") |> 
         addProviderTiles(providers$Esri.WorldImagery, group = "Satellite") |> 
         
         addLayersControl(baseGroups = c("Topo", "Satellite"),
                          options = layersControlOptions(collapsed = FALSE)) |> 
-        
-        fitBounds(minLong, maxLat, maxLong, minLat) 
+        fitBounds(USWest, USNorth, USEast, USSouth) 
     })
     
-    observeEvent(input$zoomBtn, {
-
-      validatePoint(input, minLat, maxLat, minLong, maxLong)
-      leafletProxy("map") |> 
-        setView(lng = input$inLong, lat = input$inLat, zoom = 14)
-    })
-
-    clickLat <- eventReactive(input$pinBtn, 
-                              round(input$map_center$lat, digits = 5))
-    clickLong <- eventReactive(input$pinBtn, 
-                               round(input$map_center$lng, digits = 6))
-    
-    observeEvent(input$pinBtn, {
-      leafletProxy("map") |> 
-        addCircleMarkers(lng = clickLong(),
-                         lat = clickLat(),
-                         layerId = "myPin")
-
-      output$pinLat <- renderText(clickLat())
-      output$pinLong <- renderText(clickLong())
+    observeEvent(input$btnPlacePin, {
+      validCoords <- validateLatLong(input$latEntered, input$longEntered)
+      shinyFeedback::feedbackWarning(
+        "latEntered",
+        !validCoords,
+        text = paste0("Lat must be between ", USSouth, " and ", USNorth,
+                      " and Long must be between ", USWest, " and ", USEast
+        )
+      )
+      req(validCoords)
+      captureCoordinates(input$latEntered, input$longEntered, output)
     })
     
-    list(
-      lat = reactive(clickLat()),
-      long = reactive(clickLong())
-    )
+    observeEvent(input$map_click, {
+      # req(input$coordsOrMap == "map")
+      # freezeReactiveValue(input, "latEntered")
+      # updateTextInput(inputId = "latEntered", value = input$map_click$lat)
+      # freezeReactiveValue(input, "longEntered")
+      # updateTextInput(inputId = "longEntered", value = input$map_click$lng)
+      captureCoordinates(input$map_click$lat, input$map_click$lng, output,
+                         zoom = input$map_zoom
+      )
+    })
+
+    # Return output$latSelected, longSelected as reactive list
+    # list(
+    #   lat = reactive(clickLat()),
+    #   long = reactive(clickLong())
+    # )
   })  
 }
 
