@@ -31,25 +31,6 @@ siteCoordsUI <- function(id) {
     hr(),
     p("Locate site either by entering coordinates or by clicking the map."),
     br(),
-    # fluidRow(
-    #   column(
-    #     width = 2,
-    #     radioButtons(
-    #       "coordsOrMap",
-    #       label = "Specify location by:",
-    #       choiceNames = c(
-    #         "Entering site coordinates",
-    #         "Clicking on the map"
-    #       ),
-    #       choiceValues = c(
-    #         "coords",
-    #         "map"
-    #       ),
-    #       selected = "coords"
-    #     )
-    #   ),
-    #   column(
-    #     width = 10,
     fluidRow(
       column(
         offset = 1,
@@ -72,8 +53,6 @@ siteCoordsUI <- function(id) {
         leafletOutput(ns("map"))
       )
     ),
-    #   ),
-    # ),
   )
 }
 
@@ -99,21 +78,12 @@ captureCoordinates <- function(lat, long, output, zoom = 10) {
   output$longSelected <- renderText(round(long, digits = 6))
 }
 
-siteCoordsServer <- function(id) {
+siteCoordsServer <- function(id,inCoords = list(lat = NA, long = NA)) {
   moduleServer(id, function(input, output, session) {
-    # Make module later, with inCoords a parameter
-    # coords <- siteCoordsServer("siteCoords")
     
-    inCoords <- list(lat = NA, long = NA)
     output$latSelected <- renderText(inCoords$lat)
     output$longSelected <- renderText(inCoords$long)
-    
-    # observeEvent(input$coordsOrMap, {
-    #   shinyjs::toggleState("latEntered", input$coordsOrMap == "coords")
-    #   shinyjs::toggleState("longEntered", input$coordsOrMap == "coords")
-    #   shinyjs::toggleState("btnPlacePin", input$coordsOrMap == "coords")
-    # })
-    
+
     output$map <- renderLeaflet({
       leaflet() |>  
         addProviderTiles(providers$Esri.WorldTopoMap, group = "Topo") |> 
@@ -138,11 +108,6 @@ siteCoordsServer <- function(id) {
     })
     
     observeEvent(input$map_click, {
-      # req(input$coordsOrMap == "map")
-      # freezeReactiveValue(input, "latEntered")
-      # updateTextInput(inputId = "latEntered", value = input$map_click$lat)
-      # freezeReactiveValue(input, "longEntered")
-      # updateTextInput(inputId = "longEntered", value = input$map_click$lng)
       captureCoordinates(input$map_click$lat, input$map_click$lng, output,
                          zoom = input$map_zoom
       )
