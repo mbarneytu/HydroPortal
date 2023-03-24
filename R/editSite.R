@@ -34,6 +34,26 @@ editSiteUI <- function(id) {
     )
   )}
 
+validateSite <- function(input, lat, long){
+  feedbackWarning("user_site_id", input$user_site_id == "", "Value is required")
+  feedbackWarning("site_name", input$site_name == "", "Value is required")
+  feedbackWarning("install_date", toString(input$install_date) == "", "Value is required")
+  feedbackWarning("contact_name", input$contact_name == "",
+                  "Value is required")
+  feedbackWarning("contact_email", input$contact_email == "",
+                  "Value is required")
+  feedbackWarning("siteCoords", is.na(lat) || is.null(lat) || lat == "", 
+                  "Click to set site coordinates")
+  
+  req(
+    input$user_site_id,
+    input$site_name,
+    input$install_date,
+    input$contact_name,
+    input$contact_email
+  )
+}
+
 populateFields <- function(site) {
   updateTextInput(inputId = "user_site_id", value = site$user_site_id)
   updateTextInput(inputId = "site_name", value = site$site_name)
@@ -48,13 +68,15 @@ populateFields <- function(site) {
 editSiteServer <- function(id, selectedSite) {
   moduleServer(id, function(input, output, session) {
     populateFields(selectedSite())
+    myCoords <- siteCoordsServer("siteCoords", 
+                                 selectedSite()$lat, selectedSite()$long)
     
     observeEvent(input$btnSave, {
-      # validateSite(input, coords$lat(), coords$long())
+      validateSite(input, myCoords$lat, myCoords$long)
 
       tryCatch({
-        saveSite(input, coords)
-        # gageSites(loadSites())
+        saveSite(input, myCoords$lat, myCoords$long)
+        gageSites(loadSites())
         showNotification("Site saved successfully.", type = "message")
       },
       
