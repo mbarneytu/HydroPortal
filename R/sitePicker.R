@@ -36,7 +36,7 @@ sitePickerServer <- function(id, gageSites, selectedSite) {
         fitBounds(-125.1, 49, -67.1, 25.2) |> 
         
         addMarkers(
-          lng = gageSites()$lon, lat = gageSites()$lat,
+          lng = gageSites()$long, lat = gageSites()$lat,
           label = paste0(gageSites()$user_site_id, " - ", gageSites()$site_name),
           layerId = gageSites()$site_id,
           popup = paste0(

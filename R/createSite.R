@@ -30,6 +30,7 @@ createSiteUI <- function(id) {
         siteCoordsUI(NS(id, "siteCoords"))
       )
     ),
+    br(),
     fluidRow(
       column(width = 6, offset = 3, 
              actionButton(NS(id, "btnSave"), "Save Site", 
@@ -49,14 +50,11 @@ validateSite <- function(input, lat, long){
                   "Value is required")
   feedbackWarning("siteCoords", is.na(lat) || is.null(lat) || lat == "", 
                   "Click to set site coordinates")
-  # message(glue::glue("lat:{lat}"))
-  
+
   req(
-      input$user_site_id,
-      input$site_name,
-      input$install_date,
-    # (input$lat > 25 & input$lat < 50),
-    # (input$long > -125.1 & input$long < -67.1),
+    input$user_site_id,
+    input$site_name,
+    input$install_date,
     input$contact_name,
     input$contact_email
   )
@@ -79,22 +77,18 @@ createSiteServer <- function(id, gageSites) {
     
     coords <- siteCoordsServer("siteCoords")
     
-    # str(coords$lat)
-    # message(glue::glue("coords: {coords}"))
-    
     observeEvent(input$btnSave, {
-      validateSite(input, coords$lat(), coords$long())
-      # message(glue::glue("lat:{coords$lat()}"))
-      
+      validateSite(input, coords$lat, coords$long)
+
       tryCatch({
-        saveSite(input, coords$lat(), coords$long())
+        saveSite(input, coords$lat, coords$long)
         gageSites(loadSites())
         resetCreateUI()
         showNotification("Site saved successfully.", type = "message")
         },
-        
+
         error = function(cnd) {
-          showNotification(paste0("Error saving to database: ", cnd$message), 
+          showNotification(paste0("Error saving to database: ", cnd$message),
                            type = "error")
         }
       )
