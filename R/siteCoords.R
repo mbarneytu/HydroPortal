@@ -65,7 +65,6 @@ validateLatLong <- function(lat, long) {
 }
 
 mapCoordinates <- function(lat, long, outCoords, zoom = 10) {
-  print(paste0("isnumeric:", (is.numeric(lat) && is.numeric(long))))
   if (is.numeric(lat) && is.numeric(long)) {
     # Zoom to the coordinates and add marker to the map
     leafletProxy("map") |> 
@@ -82,13 +81,12 @@ mapCoordinates <- function(lat, long, outCoords, zoom = 10) {
 
 siteCoordsServer <- function(id, inLat = NA, inLong = NA) {
   moduleServer(id, function(input, output, session) {
-    print(paste0("inLat-Long: ", inLat, inLong))
     outCoords <- reactiveValues(
       lat = inLat, 
       long = inLong
     )
     mapCoordinates(inLat, inLong, outCoords)
-
+    
     output$latSelected <- renderText(outCoords$lat)
     output$longSelected <- renderText(outCoords$long)
     
