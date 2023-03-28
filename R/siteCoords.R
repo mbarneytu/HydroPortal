@@ -64,8 +64,9 @@ validateLatLong <- function(lat, long) {
   )
 }
 
-mapCoordinates <- function(lat, long, outCoords, zoom = 10) {
+mapCoordinates <- function(lat, long, zoom = 10) {
   if (is.numeric(lat) && is.numeric(long)) {
+    print(paste0(strftime(Sys.time(), "%H:%M:%OS3"), " Mapping ", lat, ", ", long))
     # Zoom to the coordinates and add marker to the map
     leafletProxy("map") |> 
       addCircleMarkers(lat = lat,
@@ -73,22 +74,24 @@ mapCoordinates <- function(lat, long, outCoords, zoom = 10) {
                        layerId = "myPin") |> 
       setView(lat = lat,
               lng = long, zoom = zoom)
-    
-    outCoords$lat <- round(lat, digits = 6)
-    outCoords$long <- round(long, digits = 6)
   }
 }
 
 siteCoordsServer <- function(id, inLat = NA, inLong = NA) {
   moduleServer(id, function(input, output, session) {
-    outCoords <- reactiveValues(
+    stopifnot(!(is.reactive(inLat)))
+    stopifnot(!(is.reactive(inLong)))
+    
+    newCoords <- reactiveValues(
       lat = inLat, 
       long = inLong
     )
-    mapCoordinates(inLat, inLong, outCoords)
     
-    output$latSelected <- renderText(outCoords$lat)
-    output$longSelected <- renderText(outCoords$long)
+    observeEvent(c(newCoords$lat, newCoords$long), {
+      output$latSelected <- renderText(newCoords$lat)
+      output$longSelected <- renderText(newCoords$long)
+      mapCoordinates(newCoords$lat, newCoords$long, zoom = input$map_zoom)
+    })
     
     output$map <- renderLeaflet({
       leaflet() |>  
@@ -110,15 +113,15 @@ siteCoordsServer <- function(id, inLat = NA, inLong = NA) {
         )
       )
       req(validCoords)
-      mapCoordinates(input$latEntered, input$longEntered, outCoords)
+      newCoords$lat <- round(input$latEntered, digits = 6)
+      newCoords$long <- round(input$longEntered, digits = 6)
     })
     
     observeEvent(input$map_click, {
-      mapCoordinates(input$map_click$lat, input$map_click$lng, outCoords,
-                         zoom = input$map_zoom
-      )
+      newCoords$lat <- round(input$map_click$lat, digits = 6)
+      newCoords$long <- round(input$map_click$lng, digits = 6)
     })
-    outCoords
+    newCoords
   })  
 }
 

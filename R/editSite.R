@@ -23,7 +23,7 @@ editSiteUI <- function(id) {
       ),
       column(
         width = 7,
-        siteCoordsUI(NS(id, "siteCoords"))
+        siteCoordsUI(NS(id, "editSiteCoords"))
       )
     ),
     fluidRow(
@@ -42,7 +42,7 @@ validateSite <- function(input, lat, long){
                   "Value is required")
   feedbackWarning("contact_email", input$contact_email == "",
                   "Value is required")
-  feedbackWarning("siteCoords", is.na(lat) || is.null(lat) || lat == "", 
+  feedbackWarning("editSiteCoords", is.na(lat) || is.null(lat) || lat == "", 
                   "Click to set site coordinates")
   
   req(
@@ -67,9 +67,13 @@ populateFields <- function(site) {
 
 editSiteServer <- function(id, selectedSite) {
   moduleServer(id, function(input, output, session) {
-    populateFields(selectedSite())
-    myCoords <- siteCoordsServer("siteCoords", 
-                                 selectedSite()$lat, selectedSite()$long)
+    stopifnot(is.reactive(selectedSite))
+    
+    observeEvent(selectedSite(), {
+      populateFields(selectedSite()) 
+      myCoords <- siteCoordsServer("editSiteCoords", 
+                                   selectedSite()$lat, selectedSite()$long)
+    })
     
     observeEvent(input$btnSave, {
       validateSite(input, myCoords$lat, myCoords$long)
