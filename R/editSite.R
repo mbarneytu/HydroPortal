@@ -65,11 +65,11 @@ populateFields <- function(site) {
   updateTextAreaInput(inputId = "notes", value = site$notes)
 }
 
-editSiteServer <- function(id, selectedSite) {
+editSiteServer <- function(id, selectedSite, tabSelected) {
   moduleServer(id, function(input, output, session) {
     stopifnot(is.reactive(selectedSite))
     
-    observeEvent(selectedSite(), {
+    observeEvent(c(selectedSite(), tabSelected), {
       populateFields(selectedSite()) 
       myCoords <- siteCoordsServer("editSiteCoords", 
                                    selectedSite()$lat, selectedSite()$long)

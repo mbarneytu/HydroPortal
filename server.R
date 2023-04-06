@@ -29,7 +29,7 @@ server <- function(input, output, session) {
   observeEvent(selectedSite(), {
     updateTabsetPanel(inputId = "outerTabs", selected = "siteDataView")
     dataViewerServer("dataViewer", selectedSite)
-    editSiteServer("editSite", selectedSite)
+    editSiteServer("editSite", selectedSite, input$innerTabs)
   })
 
   uploaderServer("uploader", selectedSite)

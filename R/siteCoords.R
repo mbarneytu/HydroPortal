@@ -66,7 +66,6 @@ validateLatLong <- function(lat, long) {
 
 mapCoordinates <- function(lat, long, zoom = 10) {
   if (is.numeric(lat) && is.numeric(long)) {
-    print(paste0(strftime(Sys.time(), "%H:%M:%OS3"), " Mapping ", lat, ", ", long))
     # Zoom to the coordinates and add marker to the map
     leafletProxy("map") |> 
       addCircleMarkers(lat = lat,
@@ -90,7 +89,7 @@ siteCoordsServer <- function(id, inLat = NA, inLong = NA) {
     observeEvent(c(newCoords$lat, newCoords$long), {
       output$latSelected <- renderText(newCoords$lat)
       output$longSelected <- renderText(newCoords$long)
-      mapCoordinates(newCoords$lat, newCoords$long, zoom = input$map_zoom)
+      mapCoordinates(newCoords$lat, newCoords$long)
     })
     
     output$map <- renderLeaflet({
