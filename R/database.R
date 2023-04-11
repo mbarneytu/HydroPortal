@@ -59,6 +59,35 @@ saveSite <- function(input, lat, long) {
   dbExecute(pool, query, params)
 }
 
+updateSite <- function(siteId, input, lat, long) {
+  query <- paste0("UPDATE site SET
+    site_name = ?,
+    user_site_id = ?,
+    active_datetime = ?,
+    lat = ?,
+    lon = ?,
+    contact_name = ?,
+    contact_email = ?,
+    landowner = ?,
+    equipment_desc = ?,
+    notes = ?
+    WHERE site_id = ?")
+  params <- list(input$site_name,
+                 input$user_site_id,
+                 input$install_date,
+                 lat,
+                 long,
+                 input$contact_name,
+                 input$contact_email,
+                 input$landowner,
+                 input$equipment,
+                 input$notes,
+                 siteId
+  )
+  
+  dbExecute(pool, query, params)
+}
+
 saveObservations <- function(tibl, siteId, fileName, filePath) {
   # Make the observations' columns match database table structure
   quotedTibl <- tibl |> 
