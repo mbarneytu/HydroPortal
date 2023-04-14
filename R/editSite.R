@@ -65,21 +65,27 @@ populateFields <- function(site) {
   updateTextAreaInput(inputId = "notes", value = site$notes)
 }
 
-editSiteServer <- function(id, selectedSite, tabSelected) {
+editSiteServer <- function(id, gageSites, selectedSite, tabSelection) {
   moduleServer(id, function(input, output, session) {
+    stopifnot(is.reactive(gageSites))
     stopifnot(is.reactive(selectedSite))
     
-    observeEvent(c(selectedSite(), tabSelected), {
-      populateFields(selectedSite()) 
-      myCoords <- siteCoordsServer("editSiteCoords", 
-                                   selectedSite()$lat, selectedSite()$long)
+    myCoords <- reactiveValues()
+
+    observeEvent(c(selectedSite(), tabSelection()), {
+      populateFields(selectedSite())
+      # print(paste0("calling siteCoordsServer with lat/long: ", 
+      #              selectedSite()$lat, ", ", selectedSite()$long))
+      myCoords <<- siteCoordsServer("editSiteCoords",
+                                    selectedSite()$lat, selectedSite()$long)
+      # print(paste0("returned from siteCoordsServer: ", myCoords$lat, ", ", myCoords$long))
     })
     
     observeEvent(input$btnSave, {
       validateSite(input, myCoords$lat, myCoords$long)
 
       tryCatch({
-        saveSite(input, myCoords$lat, myCoords$long)
+        updateSite(selectedSite()$site_id, input, myCoords$lat, myCoords$long)
         gageSites(loadSites())
         showNotification("Site saved successfully.", type = "message")
       },

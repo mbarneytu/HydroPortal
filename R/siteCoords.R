@@ -64,10 +64,10 @@ validateLatLong <- function(lat, long) {
   )
 }
 
-mapCoordinates <- function(lat, long, zoom = 10) {
+mapCoordinates <- function(mapproxy, lat, long, zoom = 10) {
   if (is.numeric(lat) && is.numeric(long)) {
     # Zoom to the coordinates and add marker to the map
-    leafletProxy("map") |> 
+    mapproxy |> 
       addCircleMarkers(lat = lat,
                        lng = long,
                        layerId = "myPin") |> 
@@ -85,11 +85,14 @@ siteCoordsServer <- function(id, inLat = NA, inLong = NA) {
       lat = inLat, 
       long = inLong
     )
+
+    output$latSelected <- renderText(newCoords$lat)
+    output$longSelected <- renderText(newCoords$long)
     
     observeEvent(c(newCoords$lat, newCoords$long), {
-      output$latSelected <- renderText(newCoords$lat)
-      output$longSelected <- renderText(newCoords$long)
-      mapCoordinates(newCoords$lat, newCoords$long)
+    # observeEvent(newCoords, {
+      # print("mapCoordinates()")
+      mapCoordinates(leafletProxy("map"), newCoords$lat, newCoords$long)
     })
     
     output$map <- renderLeaflet({
@@ -121,7 +124,7 @@ siteCoordsServer <- function(id, inLat = NA, inLong = NA) {
       newCoords$long <- round(input$map_click$lng, digits = 6)
     })
     newCoords
-  })  
+  })
 }
 
 
