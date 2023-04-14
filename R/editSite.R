@@ -1,3 +1,11 @@
+library(shinyFeedback)
+
+# US map bounds
+USSouth <- 25
+USNorth <- 49
+USWest <- -125
+USEast <- -67
+
 editSiteUI <- function(id) {
   ns <- NS(id)
   tagList(
@@ -44,7 +52,19 @@ editSiteUI <- function(id) {
   )
 }
 
-validateSite <- function(input, lat, long){
+isLatValid <- function(lat) {
+  return(
+    !is.na(lat) && dplyr::between(lat, USSouth, USNorth) 
+  )
+}
+
+isLongValid <- function(long) {
+  return(
+    !is.na(long) && dplyr::between(long, USWest, USEast)
+  )
+}
+
+validateSite <- function(input){
   feedbackWarning("user_site_id", input$user_site_id == "", "Value is required")
   feedbackWarning("site_name", input$site_name == "", "Value is required")
   feedbackWarning("install_date", toString(input$install_date) == "", "Value is required")
@@ -52,12 +72,18 @@ validateSite <- function(input, lat, long){
                   "Value is required")
   feedbackWarning("contact_email", input$contact_email == "",
                   "Value is required")
+  feedbackWarning("latEntered", !isLatValid(input$latEntered), 
+                  paste0("Lat must be between ", USSouth, " and ", USNorth))
+  feedbackWarning("longEntered", !isLongValid(input$longEntered), 
+                  paste0("Long must be between ", USWest, " and ", USEast))
   req(
     input$user_site_id,
     input$site_name,
     input$install_date,
     input$contact_name,
-    input$contact_email
+    input$contact_email,
+    input$latEntered,
+    input$longEntered
   )
 }
 
@@ -73,6 +99,7 @@ populateFields <- function(site) {
   updateNumericInput(inputId = "latEntered", value = site$lat)
   updateNumericInput(inputId = "longEntered", value = site$long)
 }
+
 editSiteServer <- function(id, gageSites, selectedSite) {
   moduleServer(id, function(input, output, session) {
     stopifnot(is.reactive(gageSites))
@@ -80,6 +107,21 @@ editSiteServer <- function(id, gageSites, selectedSite) {
     
     observeEvent(selectedSite(), {
       populateFields(selectedSite())
+    })
+    
+    observeEvent(input$btnSave, {
+      validateSite(input)
+      tryCatch({
+        updateSite(selectedSite()$site_id, input)
+        gageSites(loadSites())
+        showNotification("Site saved successfully.", type = "message")
+      },
+      
+      error = function(cnd) {
+        showNotification(paste0("Error saving to database: ", cnd$message), 
+                         type = "error")
+      }
+      )
     })
   })
 }

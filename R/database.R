@@ -59,7 +59,7 @@ saveSite <- function(input, coords) {
   dbExecute(pool, query, params)
 }
 
-updateSite <- function(siteId, input, lat, long) {
+updateSite <- function(siteId, input) {
   query <- paste0("UPDATE site SET
     site_name = ?,
     user_site_id = ?,
@@ -75,8 +75,8 @@ updateSite <- function(siteId, input, lat, long) {
   params <- list(input$site_name,
                  input$user_site_id,
                  input$install_date,
-                 lat,
-                 long,
+                 input$latEntered,
+                 input$longEntered,
                  input$contact_name,
                  input$contact_email,
                  input$landowner,
@@ -85,6 +85,8 @@ updateSite <- function(siteId, input, lat, long) {
                  siteId
   )
   
+  print(query)
+  print(params)
   dbExecute(pool, query, params)
 }
 
