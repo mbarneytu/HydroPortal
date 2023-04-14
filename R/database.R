@@ -37,7 +37,7 @@ loadSessionIds <- function(expiry = 7) {
 }
 
 loadSites <- function() {
-  query <- "SELECT site_id, site_name, user_site_id, active_datetime, lat, lon, 
+  query <- "SELECT site_id, site_name, user_site_id, active_datetime, lat, lon as 'long', 
   contact_name, contact_email, landowner, equipment_desc, notes FROM site"
   res <- as_tibble(dbGetQuery(pool, query))
 }
@@ -54,6 +54,35 @@ saveSite <- function(input, coords) {
                  input$landowner,
                  input$equipment,
                  input$notes
+  )
+  
+  dbExecute(pool, query, params)
+}
+
+updateSite <- function(siteId, input, lat, long) {
+  query <- paste0("UPDATE site SET
+    site_name = ?,
+    user_site_id = ?,
+    active_datetime = ?,
+    lat = ?,
+    lon = ?,
+    contact_name = ?,
+    contact_email = ?,
+    landowner = ?,
+    equipment_desc = ?,
+    notes = ?
+    WHERE site_id = ?")
+  params <- list(input$site_name,
+                 input$user_site_id,
+                 input$install_date,
+                 lat,
+                 long,
+                 input$contact_name,
+                 input$contact_email,
+                 input$landowner,
+                 input$equipment,
+                 input$notes,
+                 siteId
   )
   
   dbExecute(pool, query, params)
