@@ -28,6 +28,7 @@ editSiteUI <- function(id) {
         textAreaInput(NS(id, "equipment"), "Equipment"),
         textInput(NS(id, "landowner"), "Landowner"),
         textAreaInput(NS(id, "notes"), "Notes"),
+        checkboxInput(NS(id, "private_flag"), "Private site (hidden from non-logged-in users)")
       ),
       column(
         width = 7,
@@ -98,6 +99,7 @@ populateFields <- function(site) {
   updateTextAreaInput(inputId = "notes", value = site$notes)
   updateNumericInput(inputId = "latEntered", value = site$lat)
   updateNumericInput(inputId = "longEntered", value = site$long)
+  updateCheckboxInput(inputId = "private_flag", value = site$private_flag)
 }
 
 resetEditUI <- function() {
@@ -111,9 +113,10 @@ resetEditUI <- function() {
   updateTextAreaInput(inputId = "notes", value = "")
   updateNumericInput(inputId = "latEntered", value = "")
   updateNumericInput(inputId = "longEntered", value = "")
+  updateCheckboxInput(inputId = "private_flag", value = FALSE)
 }
 
-editSiteServer <- function(id, gageSites, selectedSite) {
+editSiteServer <- function(id, gageSites, selectedSite, user_auth) {
   moduleServer(id, function(input, output, session) {
     stopifnot(is.reactive(gageSites))
     stopifnot(is.reactive(selectedSite))
@@ -126,13 +129,16 @@ editSiteServer <- function(id, gageSites, selectedSite) {
       validateSite(input)
       tryCatch({
         updateSite(selectedSite()$site_id, input)
-        gageSites(loadSites())
+        # gageSites(loadSites(user_auth)) #<<< THIS LINE causes: Warning: Error in gageSites:
+                                                              # unused argument (loadSites(user_auth))
+                                                              # when outside tryCatch
+        gageSites <- reactive(loadSites(user_auth))
         resetEditUI()
         showNotification("Site saved successfully.", type = "message")
       },
-      
+
       error = function(cnd) {
-        showNotification(paste0("Error saving to database: ", cnd$message), 
+        showNotification(paste0("Error saving to database: ", cnd$message),
                          type = "error")
       }
       )

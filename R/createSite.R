@@ -24,6 +24,7 @@ createSiteUI <- function(id) {
         textAreaInput(NS(id, "equipment"), "Equipment"),
         textInput(NS(id, "landowner"), "Landowner"),
         textAreaInput(NS(id, "notes"), "Notes"),
+        checkboxInput(NS(id, "private_flag"), "Private site (hidden from non-logged-in users)")
       ),
       column(
         width = 7,
@@ -72,9 +73,10 @@ resetCreateUI <- function() {
   updateTextAreaInput(inputId = "equipment", value = "")
   updateTextInput(inputId = "landowner", value = "")
   updateTextAreaInput(inputId = "notes", value = "")
+  updateCheckboxInput(inputId = "private_flag", value = FALSE)
 }
 
-createSiteServer <- function(id, gageSites) {
+createSiteServer <- function(id, gageSites, user_auth) {
   moduleServer(id, function(input, output, session) {
     
     coords <- siteCoordsServer("siteCoords")
@@ -88,7 +90,7 @@ createSiteServer <- function(id, gageSites) {
       
       tryCatch({
         saveSite(input, coords)
-        gageSites(loadSites())
+        gageSites(loadSites(user_auth))
         resetCreateUI()
         showNotification("Site saved successfully.", type = "message")
         },

@@ -36,14 +36,20 @@ loadSessionIds <- function(expiry = 7) {
     filter(login_time > now() - days(expiry))
 }
 
-loadSites <- function() {
+loadSites <- function(authorized) {
   query <- "SELECT site_id, site_name, user_site_id, active_datetime, lat, lon as 'long', 
-  contact_name, contact_email, landowner, equipment_desc, notes FROM site"
+  contact_name, contact_email, landowner, equipment_desc, notes, private_flag FROM site"
+  
+  # Hide private sites from unauthorized users
+  if (!authorized) {
+    query <- paste0(query, " WHERE private_flag = 0")
+  }
+  
   res <- as_tibble(dbGetQuery(pool, query))
 }
 
 saveSite <- function(input, coords) {
-  query <- paste0("CALL ins_site(?,?,?,?,?,?,?,?,?,?)")
+  query <- paste0("CALL ins_site(?,?,?,?,?,?,?,?,?,?,?)")
   params <- list(input$site_name,
                  input$user_site_id,
                  input$install_date,
@@ -53,7 +59,8 @@ saveSite <- function(input, coords) {
                  input$contact_email,
                  input$landowner,
                  input$equipment,
-                 input$notes
+                 input$notes,
+                 input$private_flag
   )
   
   dbExecute(pool, query, params)
@@ -70,7 +77,8 @@ updateSite <- function(siteId, input) {
     contact_email = ?,
     landowner = ?,
     equipment_desc = ?,
-    notes = ?
+    notes = ?,
+    private_flag = ?
     WHERE site_id = ?")
   params <- list(input$site_name,
                  input$user_site_id,
@@ -82,6 +90,7 @@ updateSite <- function(siteId, input) {
                  input$landowner,
                  input$equipment,
                  input$notes,
+                 input$private_flag,
                  siteId
   )
   

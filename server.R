@@ -14,10 +14,12 @@ server <- function(input, output, session) {
     }
   }, ignoreInit = TRUE)
   
-  # Load all sites from the database
-  gageSites <- reactiveVal(loadSites())
+  # Load sites from the database
+  gageSites <- eventReactive(credentials(), {
+    loadSites(credentials()$user_auth)
+  }, ignoreInit = TRUE)
   
-  createSiteServer("createSite", gageSites)
+  createSiteServer("createSite", gageSites, credentials()$user_auth)
 
   selectedSite <- reactiveVal()
   
@@ -31,7 +33,7 @@ server <- function(input, output, session) {
     dataViewerServer("dataViewer", selectedSite)
   })
   
-  editSiteServer("editSite", gageSites, selectedSite)
+  editSiteServer("editSite", gageSites, selectedSite, credentials()$user_auth)
 
   uploaderServer("uploader", selectedSite)
   
