@@ -85,8 +85,6 @@ updateSite <- function(siteId, input) {
                  siteId
   )
   
-  print(query)
-  print(params)
   dbExecute(pool, query, params)
 }
 
