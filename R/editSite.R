@@ -100,6 +100,19 @@ populateFields <- function(site) {
   updateNumericInput(inputId = "longEntered", value = site$long)
 }
 
+resetEditUI <- function() {
+  updateTextInput(inputId = "user_site_id", value = "")
+  updateTextInput(inputId = "site_name", value = "")
+  updateTextInput(inputId = "contact_name", value = "")
+  updateTextInput(inputId = "contact_email", value = "")
+  updateDateInput(inputId = "install_date", value = "")
+  updateTextAreaInput(inputId = "equipment", value = "")
+  updateTextInput(inputId = "landowner", value = "")
+  updateTextAreaInput(inputId = "notes", value = "")
+  updateNumericInput(inputId = "latEntered", value = "")
+  updateNumericInput(inputId = "longEntered", value = "")
+}
+
 editSiteServer <- function(id, gageSites, selectedSite) {
   moduleServer(id, function(input, output, session) {
     stopifnot(is.reactive(gageSites))
@@ -114,6 +127,7 @@ editSiteServer <- function(id, gageSites, selectedSite) {
       tryCatch({
         updateSite(selectedSite()$site_id, input)
         gageSites(loadSites())
+        resetEditUI()
         showNotification("Site saved successfully.", type = "message")
       },
       
