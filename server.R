@@ -30,6 +30,8 @@ server <- function(input, output, session) {
     updateTabsetPanel(inputId = "outerTabs", selected = "siteDataView")
     dataViewerServer("dataViewer", selectedSite)
   })
+  
+  editSiteServer("editSite", gageSites, selectedSite)
 
   uploaderServer("uploader", selectedSite)
   
