@@ -40,7 +40,7 @@ createSiteUI <- function(id) {
   )
 }
 
-validateSite <- function(input, lat, long){
+validateCreateSite <- function(input, lat, long){
   feedbackWarning("user_site_id", input$user_site_id == "", "Value is required")
   feedbackWarning("site_name", input$site_name == "", "Value is required")
   feedbackWarning("install_date", toString(input$install_date) == "", "Value is required")
@@ -78,7 +78,7 @@ createSiteServer <- function(id, gageSites) {
     coords <- siteCoordsServer("siteCoords")
     
     observeEvent(input$btnSave, {
-      validateSite(input, coords$lat, coords$long)
+      validateCreateSite(input, coords$lat, coords$long)
 
       tryCatch({
         saveSite(input, coords$lat, coords$long)

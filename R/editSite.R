@@ -34,7 +34,7 @@ editSiteUI <- function(id) {
     )
   )}
 
-validateSite <- function(input, lat, long){
+validateEditSite <- function(input, lat, long){
   feedbackWarning("user_site_id", input$user_site_id == "", "Value is required")
   feedbackWarning("site_name", input$site_name == "", "Value is required")
   feedbackWarning("install_date", toString(input$install_date) == "", "Value is required")
@@ -82,7 +82,7 @@ editSiteServer <- function(id, gageSites, selectedSite, tabSelection) {
     })
     
     observeEvent(input$btnSave, {
-      validateSite(input, myCoords$lat, myCoords$long)
+      validateEditSite(input, myCoords$lat, myCoords$long)
 
       tryCatch({
         updateSite(selectedSite()$site_id, input, myCoords$lat, myCoords$long)
