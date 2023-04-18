@@ -1,6 +1,5 @@
 library(pool)
 library(shiny)
-library(config)
 library(dplyr)
 library(stringr)
 
