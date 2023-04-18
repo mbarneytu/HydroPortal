@@ -65,7 +65,7 @@ isLongValid <- function(long) {
   )
 }
 
-validateSite <- function(input){
+validateEditSite <- function(input){
   feedbackWarning("user_site_id", input$user_site_id == "", "Value is required")
   feedbackWarning("site_name", input$site_name == "", "Value is required")
   feedbackWarning("install_date", toString(input$install_date) == "", "Value is required")
@@ -126,7 +126,7 @@ editSiteServer <- function(id, gageSites, selectedSite, user_auth) {
     })
     
     observeEvent(input$btnSave, {
-      validateSite(input)
+      validateEditSite(input)
       tryCatch({
         updateSite(selectedSite()$site_id, input)
         # gageSites(loadSites(user_auth)) #<<< THIS LINE causes: Warning: Error in gageSites:
