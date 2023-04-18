@@ -130,8 +130,10 @@ editSiteServer <- function(id, gageSites, selectedSite, user_auth) {
       tryCatch({
         updateSite(selectedSite()$site_id, input)
         # gageSites(loadSites(user_auth)) #<<< THIS LINE causes: Warning: Error in gageSites:
-                                                              # unused argument (loadSites(user_auth))
-                                                              # when outside tryCatch
+                                          # unused argument (loadSites(user_auth))
+                                          # when outside tryCatch
+        # AND the next time you come into edit the site, it's stale data. 
+
         gageSites <- reactive(loadSites(user_auth))
         resetEditUI()
         showNotification("Site saved successfully.", type = "message")
